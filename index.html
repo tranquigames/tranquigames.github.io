@@ -6,4 +6,319 @@
 <body>
   <h1>Tranqui Games</h1>
 </body>
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tranqui Puzzle Club — Nonogram</title>
+<style>
+  :root {
+    --cream: #FBF7F0;
+    --ink: #2E2A26;
+    --line: #C9C0B4;
+    --fill: #4A6C6F;
+    --accent: #C97B5A;
+    --paper: #FFFFFF;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 16px 64px;
+  }
+
+  h1 {
+    font-size: 22px;
+    letter-spacing: 0.02em;
+    margin: 0 0 4px;
+  }
+
+  p.subtitle {
+    margin: 0 0 24px;
+    color: #6b6459;
+    font-size: 14px;
+  }
+
+  .board-wrap {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+    overflow-x: auto;
+  }
+
+  canvas {
+    display: block;
+    cursor: pointer;
+    touch-action: none;
+  }
+
+  .controls {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  button {
+    font-family: inherit;
+    font-size: 14px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink);
+    cursor: pointer;
+    transition: transform 0.1s ease, background 0.15s ease;
+  }
+
+  button:hover { background: #f2ede4; }
+  button:active { transform: scale(0.97); }
+
+  button.primary {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  button.primary:hover { background: #b56a4b; }
+
+  .legend {
+    margin-top: 18px;
+    font-size: 13px;
+    color: #6b6459;
+    text-align: center;
+    max-width: 420px;
+    line-height: 1.5;
+  }
+
+  .legend b { color: var(--ink); }
+</style>
+</head>
+<body>
+
+  <h1>Tranqui Puzzle Club 🧩</h1>
+  <p class="subtitle">This week's puzzle: Nonogram</p>
+
+  <div class="board-wrap">
+    <canvas id="board"></canvas>
+  </div>
+
+  <div class="controls">
+    <button id="clearBtn">Clear board</button>
+    <button id="downloadBtn" class="primary">Download my solution</button>
+  </div>
+
+  <div class="legend">
+    <b>Left click</b> to paint a cell. <b>Right click</b> (or long-press on mobile) to mark a cell with an X.
+    Click again to clear a cell.
+  </div>
+
+<script>
+/* ============================================================
+   PUZZLE DEFINITION
+   Replace this 15x15 grid with your own picture.
+   1 = filled cell, 0 = empty cell.
+   Row/column clues are generated automatically from this grid.
+   ============================================================ */
+const PUZZLE = [
+  [0,0,0,0,0,1,1,1,1,1,0,0,0,0,0],
+  [0,0,0,0,1,1,1,1,1,1,1,0,0,0,0],
+  [0,0,0,1,1,1,1,1,1,1,1,1,0,0,0],
+  [0,0,1,1,1,0,0,1,0,0,1,1,1,0,0],
+  [0,1,1,1,0,0,0,1,0,0,0,1,1,1,0],
+  [0,1,1,0,0,0,0,1,0,0,0,0,1,1,0],
+  [1,1,0,0,0,0,0,1,0,0,0,0,0,1,1],
+  [1,1,0,0,0,0,0,1,0,0,0,0,0,1,1],
+  [1,1,0,0,0,0,0,1,0,0,0,0,0,1,1],
+  [0,1,1,0,0,0,0,1,0,0,0,0,1,1,0],
+  [0,1,1,1,0,0,0,1,0,0,0,1,1,1,0],
+  [0,0,1,1,1,0,0,1,0,0,1,1,1,0,0],
+  [0,0,0,1,1,1,1,1,1,1,1,1,0,0,0],
+  [0,0,0,0,1,1,1,1,1,1,1,0,0,0,0],
+  [0,0,0,0,0,1,1,1,1,1,0,0,0,0,0]
+];
+
+const SIZE = PUZZLE.length;
+
+// ---- Derive clues from the puzzle ----
+function getLineClue(line) {
+  const clue = [];
+  let run = 0;
+  for (const cell of line) {
+    if (cell === 1) {
+      run++;
+    } else if (run > 0) {
+      clue.push(run);
+      run = 0;
+    }
+  }
+  if (run > 0) clue.push(run);
+  return clue.length ? clue : [0];
+}
+
+const rowClues = PUZZLE.map(getLineClue);
+const colClues = [];
+for (let c = 0; c < SIZE; c++) {
+  const col = PUZZLE.map(row => row[c]);
+  colClues.push(getLineClue(col));
+}
+
+// ---- Layout ----
+const CELL = 32;
+const maxRowClueLen = Math.max(...rowClues.map(c => c.length));
+const maxColClueLen = Math.max(...colClues.map(c => c.length));
+
+const LEFT_MARGIN = maxRowClueLen * 18 + 12;
+const TOP_MARGIN = maxColClueLen * 18 + 12;
+const GRID_W = SIZE * CELL;
+const GRID_H = SIZE * CELL;
+
+const canvas = document.getElementById('board');
+canvas.width = LEFT_MARGIN + GRID_W;
+canvas.height = TOP_MARGIN + GRID_H;
+const ctx = canvas.getContext('2d');
+
+// cell state: 0 = empty, 1 = filled, 2 = marked X
+let state = Array.from({ length: SIZE }, () => Array(SIZE).fill(0));
+
+function draw() {
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // draw clues
+  ctx.fillStyle = '#2E2A26';
+  ctx.font = '14px Trebuchet MS, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  // column clues
+  colClues.forEach((clue, c) => {
+    const x = LEFT_MARGIN + c * CELL + CELL / 2;
+    clue.forEach((num, i) => {
+      const y = TOP_MARGIN - (clue.length - i) * 16 - 4;
+      ctx.fillText(num, x, y);
+    });
+  });
+
+  // row clues
+  rowClues.forEach((clue, r) => {
+    const y = TOP_MARGIN + r * CELL + CELL / 2;
+    clue.forEach((num, i) => {
+      const x = LEFT_MARGIN - (clue.length - i) * 18 + 8;
+      ctx.fillText(num, x, y);
+    });
+  });
+
+  // grid background
+  for (let r = 0; r < SIZE; r++) {
+    for (let c = 0; c < SIZE; c++) {
+      const x = LEFT_MARGIN + c * CELL;
+      const y = TOP_MARGIN + r * CELL;
+
+      if (state[r][c] === 1) {
+        ctx.fillStyle = '#4A6C6F';
+        ctx.fillRect(x, y, CELL, CELL);
+      } else {
+        ctx.fillStyle = '#FBF7F0';
+        ctx.fillRect(x, y, CELL, CELL);
+      }
+
+      if (state[r][c] === 2) {
+        ctx.strokeStyle = '#C97B5A';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(x + 7, y + 7);
+        ctx.lineTo(x + CELL - 7, y + CELL - 7);
+        ctx.moveTo(x + CELL - 7, y + 7);
+        ctx.lineTo(x + 7, y + CELL - 7);
+        ctx.stroke();
+      }
+    }
+  }
+
+  // grid lines
+  ctx.strokeStyle = '#C9C0B4';
+  for (let i = 0; i <= SIZE; i++) {
+    ctx.lineWidth = (i % 5 === 0) ? 2 : 1;
+    ctx.beginPath();
+    ctx.moveTo(LEFT_MARGIN + i * CELL, TOP_MARGIN);
+    ctx.lineTo(LEFT_MARGIN + i * CELL, TOP_MARGIN + GRID_H);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(LEFT_MARGIN, TOP_MARGIN + i * CELL);
+    ctx.lineTo(LEFT_MARGIN + GRID_W, TOP_MARGIN + i * CELL);
+    ctx.stroke();
+  }
+}
+
+function cellFromEvent(evt) {
+  const rect = canvas.getBoundingClientRect();
+  const x = evt.clientX - rect.left;
+  const y = evt.clientY - rect.top;
+  const c = Math.floor((x - LEFT_MARGIN) / CELL);
+  const r = Math.floor((y - TOP_MARGIN) / CELL);
+  if (r < 0 || r >= SIZE || c < 0 || c >= SIZE) return null;
+  return { r, c };
+}
+
+canvas.addEventListener('click', (evt) => {
+  const cell = cellFromEvent(evt);
+  if (!cell) return;
+  const { r, c } = cell;
+  state[r][c] = state[r][c] === 1 ? 0 : 1;
+  draw();
+});
+
+canvas.addEventListener('contextmenu', (evt) => {
+  evt.preventDefault();
+  const cell = cellFromEvent(evt);
+  if (!cell) return;
+  const { r, c } = cell;
+  state[r][c] = state[r][c] === 2 ? 0 : 2;
+  draw();
+});
+
+// basic long-press support for mobile to mark X
+let pressTimer = null;
+canvas.addEventListener('touchstart', (evt) => {
+  const touch = evt.touches[0];
+  pressTimer = setTimeout(() => {
+    const cell = cellFromEvent(touch);
+    if (!cell) return;
+    const { r, c } = cell;
+    state[r][c] = state[r][c] === 2 ? 0 : 2;
+    draw();
+  }, 500);
+});
+canvas.addEventListener('touchend', () => clearTimeout(pressTimer));
+canvas.addEventListener('touchmove', () => clearTimeout(pressTimer));
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+  state = Array.from({ length: SIZE }, () => Array(SIZE).fill(0));
+  draw();
+});
+
+document.getElementById('downloadBtn').addEventListener('click', () => {
+  const link = document.createElement('a');
+  link.download = 'tranqui-puzzle-club-nonogram.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+});
+
+draw();
+</script>
+</body>
+</html>
 </html>
