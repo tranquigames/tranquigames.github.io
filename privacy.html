@@ -9,185 +9,170 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --cream: #FEF9EE;
-    --peach: #FEE9C5;
-    --accent: #F7875C;
-    --ink: #2B1C13;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'Lora', serif;
-    background: var(--cream);
-    color: var(--ink);
-    line-height: 1.7;
-  }
-
-  .top-bar {
-    padding: 20px 24px;
-    border-bottom: 1px solid rgba(43,28,19,0.1);
-  }
-
-  .top-bar a {
-    color: var(--ink);
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 15px;
-  }
-
-  .top-bar a:hover { color: var(--accent); }
-
-  main {
-    max-width: 760px;
-    margin: 0 auto;
-    padding: 64px 24px 100px;
-  }
-
-  h1 {
-    font-size: clamp(26px, 4.5vw, 36px);
-    font-weight: 700;
-    margin-bottom: 8px;
-  }
-
-  .updated {
-    font-size: 14px;
-    color: rgba(43,28,19,0.6);
-    margin-bottom: 40px;
-  }
-
-  h2 {
-    font-size: 20px;
-    font-weight: 700;
-    margin-top: 36px;
-    margin-bottom: 12px;
-  }
-
-  p {
-    margin-bottom: 16px;
-    color: rgba(43,28,19,0.85);
-  }
-
-  a.inline-link {
-    color: var(--accent);
-    text-decoration: underline;
-  }
+:root {
+  --cream: #FEF9EE;
+  --peach: #FEE9C5;
+  --accent: #F7875C;
+  --ink: #2B1C13;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Lora', serif;
+  background: var(--cream);
+  color: var(--ink);
+  line-height: 1.7;
+}
+main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 64px 24px 100px;
+}
+h1 {
+  font-size: clamp(26px, 4.5vw, 36px);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.updated {
+  font-size: 14px;
+  color: rgba(43,28,19,0.6);
+  margin-bottom: 40px;
+}
+.eyebrow {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-top: 36px;
+  margin-bottom: 6px;
+}
+h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+p {
+  margin-bottom: 16px;
+  color: rgba(43,28,19,0.85);
+}
+ul {
+  margin: 0 0 16px 22px;
+}
+li {
+  margin-bottom: 10px;
+  color: rgba(43,28,19,0.85);
+}
+a.inline-link {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.card-note {
+  background: var(--peach);
+  border-radius: 16px;
+  padding: 24px 28px;
+  margin-top: 44px;
+  font-size: 14px;
+  color: rgba(43,28,19,0.75);
+}
 </style>
 </head>
 <body>
 
-  <div class="top-bar">
-    <a href="index.html">&larr; Volver a Tranqui Games</a>
+<main>
+  <h1>Política de Privacidad — Sudokiller</h1>
+  <p class="updated">Tranqui Games — Última actualización: 9 de julio de 2026</p>
+
+  <p>
+    Esta Política de Privacidad describe qué información recopilamos a través del videojuego Sudokiller (la "Aplicación"), con qué finalidad, con quién la compartimos y qué opciones tenés como usuario. Se lee en conjunto con los Términos de Uso de la Aplicación, que es un documento separado.
+  </p>
+
+  <span class="eyebrow">01</span>
+  <h2>Responsable del tratamiento</h2>
+  <p>
+    Tranqui Games es el desarrollador y responsable de los datos descritos en esta política. Podés contactarnos ante cualquier consulta relacionada con privacidad en:
+    <a class="inline-link" href="mailto:hellotranquigames@gmail.com">hellotranquigames@gmail.com</a>.
+  </p>
+
+  <span class="eyebrow">02</span>
+  <h2>Qué información recopilamos</h2>
+  <p>
+    Sudokiller utiliza el SDK del proveedor externo Talo (trytalo.com) para funciones técnicas y estadísticas de uso agregadas. A través de este SDK se recopila:
+  </p>
+  <ul>
+    <li>Identificador de dispositivo (UUID): un identificador aleatorio generado y almacenado localmente en tu dispositivo, que nos permite diferenciar sesiones de juego. No está vinculado a tu nombre, email ni ninguna otra información que te identifique directamente.</li>
+    <li>Datos de interacción y progreso dentro del juego: eventos de menú, uso de ítems dentro del juego, tiempos de partida y tasas de éxito/fallo en los niveles.</li>
+    <li>Metadata técnica del dispositivo asociada a cada evento: sistema operativo, versión del juego, modo de ventana y tamaño de pantalla.</li>
+    <li>Dirección IP: como ocurre con cualquier conexión a internet, tu dispositivo transmite tu dirección IP a los servidores de Talo al enviar esta información. No la almacenamos nosotros directamente; puede quedar registrada temporalmente en los logs de infraestructura de Talo.</li>
+  </ul>
+  <p>
+    Esta información se envía automáticamente mientras jugás, como parte del funcionamiento técnico de la Aplicación; actualmente no usamos leaderboards, autenticación de jugadores ni integraciones con Steamworks u otras plataformas que pudieran vincular estos datos a una cuenta o identidad. No recopilamos datos de contacto (nombre, email, teléfono), ubicación precisa, contactos del dispositivo, ni contenido de archivos personales. Si en una futura actualización cambiamos qué datos recopilamos o incorporamos funciones que sí requieran identificar al jugador (por ejemplo, leaderboards vinculados a una cuenta), vamos a actualizar esta política antes de que ese cambio entre en vigencia.
+  </p>
+
+  <span class="eyebrow">03</span>
+  <h2>Para qué usamos esta información</h2>
+  <ul>
+    <li>Diferenciar sesiones técnicas y evitar duplicados o inconsistencias de progreso.</li>
+    <li>Generar estadísticas agregadas de uso (por ejemplo, qué niveles son más difíciles) que nos ayudan a mejorar el diseño del juego.</li>
+    <li>Diagnosticar errores técnicos y mejorar el rendimiento de la Aplicación.</li>
+  </ul>
+  <p>No usamos esta información con fines publicitarios ni la vendemos a terceros.</p>
+
+  <span class="eyebrow">04</span>
+  <h2>Con quién compartimos la información</h2>
+  <p>
+    Los datos técnicos descritos en la sección anterior son procesados por Talo (trytalo.com) como proveedor de infraestructura, únicamente con el fin de brindar el servicio de analítica descrito arriba. Te recomendamos revisar la política de privacidad propia de Talo para más detalle sobre su tratamiento de datos.
+  </p>
+  <p>No compartimos información con anunciantes, brokers de datos, ni la transferimos para fines distintos a los descritos en esta política. Talo es el único tercero con el que compartimos datos técnicos; no hay otras integraciones de analítica, publicidad u otros servicios de terceros en la Aplicación.</p>
+
+  <span class="eyebrow">05</span>
+  <h2>Menores de edad</h2>
+  <p>
+    Sudokiller está dirigido a un público general a partir de los 13 años. No solicitamos intencionalmente datos personales identificables de menores de 13 años. Si sos madre, padre o tutor/a y creés que un/a menor a tu cargo usó la Aplicación y nos proporcionó datos sin tu consentimiento, escribinos a
+    <a class="inline-link" href="mailto:hellotranquigames@gmail.com">hellotranquigames@gmail.com</a> para que evaluemos la eliminación del identificador técnico correspondiente.
+  </p>
+
+  <span class="eyebrow">06</span>
+  <h2>Seguridad de la información</h2>
+  <p>
+    Tomamos medidas razonables para proteger la información procesada por la Aplicación. Sin embargo, ningún sistema de transmisión o almacenamiento de datos es completamente infalible, por lo que no podemos garantizar seguridad absoluta frente a accesos no autorizados.
+  </p>
+
+  <span class="eyebrow">07</span>
+  <h2>Tus derechos y cómo ejercerlos</h2>
+  <p>Podés solicitarnos en cualquier momento:</p>
+  <ul>
+    <li>Información sobre qué datos técnicos se generan a raíz de tu uso de la Aplicación.</li>
+    <li>La eliminación del identificador (UUID) asociado a tu dispositivo.</li>
+  </ul>
+  <p>
+    Como no manejamos cuentas de usuario ni perfiles con nombre, la forma más directa de eliminar tu identificador es borrar los datos locales de la Aplicación o desinstalarla: en Steam, esto se hace desinstalando el juego desde el cliente (y opcionalmente borrando la carpeta de guardado local); en Android, desde la configuración de la app o desinstalándola desde el dispositivo. En cualquiera de los dos casos, si volvés a instalar el juego se genera un nuevo UUID sin vínculo con el anterior. Si preferís pedirnos asistencia igual, escribinos a
+    <a class="inline-link" href="mailto:hellotranquigames@gmail.com">hellotranquigames@gmail.com</a> y te ayudamos a resolverlo dentro de nuestras posibilidades técnicas.
+  </p>
+
+  <span class="eyebrow">08</span>
+  <h2>Conservación de los datos</h2>
+  <p>
+    Nuestra política es conservar los datos técnicos solo mientras sean necesarios para los fines descritos en esta política. Tranqui Games no mantiene una base de datos propia separada: los eventos técnicos se procesan y almacenan directamente en la infraestructura de Talo (trytalo.com), nuestro proveedor de analítica. Si desinstalás la Aplicación o borrás sus datos localmente, dejamos de asociar nueva información a ese identificador y no podemos recuperarlo de tu dispositivo. Podés solicitar la eliminación de los datos ya asociados a tu identificador en cualquier momento escribiéndonos a <a class="inline-link" href="mailto:hellotranquigames@gmail.com">hellotranquigames@gmail.com</a>, y vamos a gestionar ese pedido directamente con Talo.
+  </p>
+
+  <span class="eyebrow">09</span>
+  <h2>Cambios a esta Política</h2>
+  <p>
+    Podemos actualizar esta Política de Privacidad para reflejar cambios técnicos, legales o funcionales. Vamos a indicar la fecha de la última actualización al inicio del documento. Te recomendamos revisarla periódicamente.
+  </p>
+
+  <span class="eyebrow">10</span>
+  <h2>Contacto</h2>
+  <p>
+    Ante cualquier consulta sobre esta Política de Privacidad, podés escribirnos a
+    <a class="inline-link" href="mailto:hellotranquigames@gmail.com">hellotranquigames@gmail.com</a>.
+  </p>
+
+  <div class="card-note">
+    Nota: este documento cubre exclusivamente el tratamiento de datos. Las condiciones de uso del juego (licencia, limitación de responsabilidad razonable, ley aplicable) deberían constar en un documento separado de Términos de Uso / EULA.
   </div>
-
-  <main>
-    <h1>Política de Privacidad y Declaración Expresa de Limitación de Responsabilidad: Videojuego "Sudokiller"</h1>
-    <p class="updated">Fecha: 7 de julio de 2026</p>
-
-    <p>
-      El presente documento constituye un acuerdo legal vinculante y unilateral que regula el uso de los datos y las
-      condiciones de indemnidad del desarrollador Tranqui Games en relación con el videojuego Sudokiller (en adelante,
-      la "Aplicación"). Al instalar, ejecutar o interactuar con la Aplicación, el usuario acepta de manera expresa,
-      irrevocable y sin reservas cada uno de los términos aquí expuestos. Si el usuario no está de acuerdo, deberá
-      desinstalar la Aplicación inmediatamente.
-    </p>
-
-    <h2>Preámbulo crítico: renuncia de acción legal y limitación de responsabilidad</h2>
-    <p>
-      Bajo ninguna circunstancia, principio legal o teoría de responsabilidad (ya sea por contrato, agravio,
-      negligencia estricta u otra base jurídica), Tranqui Games, sus desarrolladores, empleados, colaboradores o
-      proveedores de infraestructura serán responsables ante el usuario o terceras personas por cualquier daño
-      directo, indirecto, incidental, especial, emergente, punitivo o ejemplar. Esto incluye, de manera enunciativa
-      pero no limitativa: pérdidas financieras, fallas de hardware, alteración o pérdida de datos, interrupción de
-      servicios, reclamaciones de terceros o cualquier otra situación fáctica que se derive, directa o
-      indirectamente, del uso o la imposibilidad de uso de la Aplicación. El usuario asume de forma exclusiva el
-      riesgo total de la ejecución del software en su hardware.
-    </p>
-
-    <h2>Cláusula de inmunidad judicial, renuncia expresa a demandas y elección de jurisdicción unilateral</h2>
-    <p>
-      <strong>Renuncia absoluta a acciones judiciales y colectivas:</strong> Al aceptar esta política y utilizar la
-      Aplicación, el usuario renuncia de forma expresa, voluntaria e irrevocable a su derecho de iniciar, participar
-      o formar parte de cualquier tipo de demanda judicial, arbitraje o acción colectiva (class action) en contra de
-      Tranqui Games o sus desarrolladores, por cualquier motivo derivado de este software. El usuario acepta resolver
-      cualquier disconformidad únicamente desinstalando la Aplicación.
-    </p>
-    <p>
-      <strong>Potestad unilateral de elección de foro:</strong> En el caso de que cualquier tribunal competente
-      declare nula, inválida o inaplicable la renuncia judicial anterior, el usuario acepta de manera incondicional
-      que Tranqui Games posee la facultad exclusiva, discrecional y unilateral de elegir el país, la
-      provincia/estado, la ciudad y el tribunal específico donde se deba tramitar la controversia.
-    </p>
-    <p>
-      <strong>Sometimiento forzoso:</strong> El usuario renuncia a cualquier objeción basada en un foro inconveniente
-      (forum non conveniens) o falta de jurisdicción personal. Será Tranqui Games quien determine el marco legal
-      aplicable y la jurisdicción territorial correspondiente en el momento de ser notificado, quedando el usuario
-      obligado a litigar bajo las leyes y en el territorio geográfico fijado por el desarrollador de forma exclusiva.
-    </p>
-
-    <h2>1. Intención de operación y exención de garantías estándar</h2>
-    <p>
-      Tranqui Games manifiesta su intención de intentar operar bajo estándares técnicos razonables para la
-      protección de la Aplicación. No obstante, el desarrollador no garantiza, asegura ni avala dichos estándares de
-      ninguna manera. El usuario acepta que el software se entrega "tal cual" y que el desarrollador no asume
-      obligaciones de resultados ni de infalibilidad técnica respecto al procesamiento de la información.
-    </p>
-
-    <h2>2. Captura excepcional de datos no especificados</h2>
-    <p>
-      En caso de que, por actualizaciones del motor (Godot 4), modificaciones de la plataforma Google Play, errores
-      de código, integraciones de complementos o cualquier otra causa imprevista, la Aplicación llegase a solicitar,
-      recopilar o procesar algún dato extra, información técnica o variable no aclarada explícitamente en este
-      documento, Tranqui Games se exime de toda responsabilidad directa o indirecta derivada de dicha captura. El
-      usuario exime al desarrollador de cualquier reclamo por recolección incidental, involuntaria o no indexada de
-      datos.
-    </p>
-
-    <h2>3. Información técnica automatizada (Framework Talo)</h2>
-    <p>
-      Para el funcionamiento técnico y generar estadísticas de uso global, la Aplicación utiliza un SDK externo
-      administrado por Talo (trytalo.com). Este componente interactúa de forma automatizada con los siguientes datos
-      técnicos:
-    </p>
-    <p>
-      <strong>Identificadores técnicos de hardware:</strong> Un identificador único global (UUID) generado de forma
-      aleatoria en el almacenamiento local del dispositivo con el único fin de diferenciar sesiones técnicas
-      concurrentes.
-    </p>
-    <p>
-      <strong>Métricas de interacción y progresión:</strong> Registro agregativo de eventos del sistema
-      (interacciones en menús, consumo de ítems internos, tiempos lógicos de juego, y tasas de éxito o fallo en los
-      niveles diseñados).
-    </p>
-
-    <h2>4. Exención absoluta sobre la exactitud y destino de la información</h2>
-    <p>
-      Tranqui Games no garantiza, avala ni se hace responsable por la exactitud, veracidad, integridad, actualidad o
-      fiabilidad de la información, datos o contenidos visualizados dentro de la Aplicación. Asimismo, el usuario
-      reconoce que la transmisión de datos por Internet o el almacenamiento digital no es 100% inmune. Tranqui Games
-      no asume responsabilidad alguna en caso de accesos no autorizados, hackeos, intercepciones de red o
-      violaciones de seguridad que afecten a la infraestructura global de telecomunicaciones o a los servidores de
-      terceros donde se alojen las métricas.
-    </p>
-
-    <h2>5. Mecanismo obligatorio de eliminación de datos por el usuario</h2>
-    <p>
-      Dado que no existen bases de datos con perfiles de usuario ni cuentas registradas en nuestros sistemas
-      directos, Tranqui Games carece de la capacidad técnica para buscar o borrar registros de forma individualizada
-      a petición de un nombre específico. La remoción total y definitiva de cualquier identificador técnico o rastro
-      de caché almacenado localmente o vinculado a la infraestructura de Talo queda bajo la entera responsabilidad
-      del usuario, quien deberá ejecutarla mediante la limpieza manual de datos de la aplicación en el panel de
-      control de Android o mediante la desinstalación completa del videojuego de su dispositivo móvil.
-    </p>
-
-    <h2>6. Contacto técnico</h2>
-    <p>
-      Para cualquier aclaración técnica vinculada exclusivamente a esta declaración, se dispone del canal oficial de
-      correspondencia electrónica en:
-      <a class="inline-link" href="mailto:hellotranquigames@gmail.com">hellotranquigames@gmail.com</a>.
-    </p>
-  </main>
+</main>
 
 </body>
 </html>
