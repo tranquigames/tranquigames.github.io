@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Nonogram #1 · Tranqui Puzzle Club</title>
-
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
 
@@ -43,6 +42,19 @@
       box-shadow: 10px 10px 0 var(--peach);
     }
 
+    .paper::before,
+    .paper::after {
+      display: none;
+    }
+
+
+    .site-logo {
+      display: block;
+      width: min(520px, 88%);
+      height: auto;
+      margin: 0 auto 30px;
+    }
+
     header {
       max-width: 700px;
       margin: 0 auto 34px;
@@ -52,26 +64,30 @@
     .eyebrow {
       margin: 0 0 12px;
       color: var(--accent);
-      font-size: 0.76rem;
+      font-family: "Lora", Georgia, serif;
+      font-size: .76rem;
       font-weight: 700;
-      letter-spacing: 0.17em;
+      letter-spacing: .17em;
       text-transform: uppercase;
     }
 
     h1 {
       margin: 0;
       color: var(--ink);
+      font-family: "Lora", Georgia, serif;
       font-size: clamp(2.8rem, 7vw, 5.7rem);
       font-weight: 700;
-      line-height: 0.95;
-      letter-spacing: -0.045em;
+      line-height: .95;
+      letter-spacing: -.045em;
+      text-transform: none;
+      text-shadow: none;
     }
 
     .subtitle {
       max-width: 610px;
       margin: 18px auto 0;
       color: var(--muted);
-      font-size: 0.98rem;
+      font-size: .98rem;
       line-height: 1.65;
     }
 
@@ -120,7 +136,8 @@
       border-right: 1px solid var(--grid-light);
       color: var(--ink);
       background: var(--cream);
-      font-size: clamp(0.62rem, 1.7vw, 0.88rem);
+      font-family: "Lora", Georgia, serif;
+      font-size: clamp(.62rem, 1.7vw, .88rem);
       font-weight: 600;
     }
 
@@ -141,12 +158,13 @@
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      gap: 0.36em;
+      gap: .36em;
       padding: 0 8px;
       border-bottom: 1px solid var(--grid-light);
       color: var(--ink);
       background: var(--cream);
-      font-size: clamp(0.66rem, 1.8vw, 0.92rem);
+      font-family: "Lora", Georgia, serif;
+      font-size: clamp(.66rem, 1.8vw, .92rem);
       font-weight: 600;
     }
 
@@ -171,7 +189,7 @@
       border-bottom: 1px solid var(--grid-light);
       background: var(--cream);
       cursor: pointer;
-      transition: background 0.12s ease;
+      transition: background .12s ease;
     }
 
     .cell:hover {
@@ -227,54 +245,48 @@
 
     button.action {
       appearance: none;
-      min-width: 150px;
+      min-width: 168px;
       padding: 13px 18px;
       border: 1px solid var(--ink);
       border-radius: 0;
       color: var(--cream);
       background: var(--accent);
+      box-shadow: none;
       font-family: "Lora", Georgia, serif;
-      font-size: 0.78rem;
+      font-size: .78rem;
       font-weight: 700;
-      letter-spacing: 0.08em;
+      letter-spacing: .08em;
       text-transform: uppercase;
       cursor: pointer;
-      transition:
-        transform 0.15s ease,
-        background 0.15s ease,
-        opacity 0.15s ease;
+      transform: none;
+      transition: transform .15s ease, background .15s ease;
     }
 
-    button.action.secondary {
+    button.action:nth-child(2) {
       color: var(--ink);
       background: var(--peach);
+      transform: none;
     }
 
-    button.action:hover:not(:disabled) {
+    button.action:hover {
       transform: translateY(-2px);
       background: var(--ink);
-      color: var(--cream);
     }
 
-    button.action.secondary:hover:not(:disabled) {
+    button.action:nth-child(2):hover {
       background: #F6D9A9;
-      color: var(--ink);
     }
 
-    button.action:active:not(:disabled) {
+    button.action:active {
       transform: translateY(0);
-    }
-
-    button.action:disabled {
-      opacity: 0.42;
-      cursor: not-allowed;
+      box-shadow: none;
     }
 
     .help {
       max-width: 650px;
       margin: 23px auto 0;
       color: var(--muted);
-      font-size: 0.86rem;
+      font-size: .86rem;
       line-height: 1.65;
       text-align: center;
     }
@@ -285,19 +297,23 @@
       margin: 34px auto 0;
       padding: 12px 18px;
       border: 1px solid var(--ink);
+      border-radius: 0;
       color: var(--ink);
       background: var(--peach);
+      font-family: "Lora", Georgia, serif;
       font-size: 1rem;
-      font-weight: 500;
+      font-weight: 600;
       font-style: italic;
       text-align: center;
+      transform: none;
     }
 
     footer {
       margin-top: 28px;
       color: var(--muted);
-      font-size: 0.72rem;
-      letter-spacing: 0.12em;
+      font-family: "Lora", Georgia, serif;
+      font-size: .72rem;
+      letter-spacing: .12em;
       text-align: center;
       text-transform: uppercase;
     }
@@ -323,27 +339,22 @@
 
       .row-clue {
         padding: 0 5px;
-        gap: 0.25em;
+        gap: .25em;
       }
 
       .column-clue {
         min-height: calc(var(--cell-size) * 2.8);
       }
-
-      button.action {
-        min-width: 135px;
-      }
     }
   </style>
 </head>
-
 <body>
   <main class="page">
     <section class="paper">
       <header>
+        <img class="site-logo" src="data:image/webp;base64,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" alt="Tranqui Games">
         <p class="eyebrow">Tranqui Puzzle Club</p>
         <h1>Nonogram #1</h1>
-
         <p class="subtitle">
           Complete the grid using the clues for each row and column.
           No login is required, and your progress is saved on this device.
@@ -351,11 +362,7 @@
       </header>
 
       <div class="game-wrap">
-        <div
-          class="nonogram"
-          id="nonogram"
-          aria-label="Interactive nonogram"
-        >
+        <div class="nonogram" id="nonogram" aria-label="Nonograma interactivo">
           <div class="corner" aria-hidden="true"></div>
           <div class="column-clues" id="columnClues"></div>
           <div class="row-clues" id="rowClues"></div>
@@ -364,28 +371,13 @@
       </div>
 
       <div class="controls">
-        <button
-          class="action secondary"
-          id="undoButton"
-          type="button"
-          disabled
-        >
+        <button class="action secondary" id="undoButton" type="button" disabled>
           Undo
         </button>
-
-        <button
-          class="action"
-          id="clearButton"
-          type="button"
-        >
+        <button class="action" id="clearButton" type="button">
           Clear all
         </button>
-
-        <button
-          class="action secondary"
-          id="downloadButton"
-          type="button"
-        >
+        <button class="action secondary" id="downloadButton" type="button">
           Download image
         </button>
       </div>
@@ -395,9 +387,7 @@
         On mobile, tap once to fill and press and hold to mark an X.
       </p>
 
-      <p class="solution-note">
-        The solution will be available next week.
-      </p>
+      <p class="solution-note">The solution will be available next week.</p>
     </section>
 
     <footer>A new dose of puzzles, every week.</footer>
@@ -408,7 +398,6 @@
       This file contains only the nonogram clues.
       It does not include, check, or reveal the solution.
     */
-
     const rowNumbers = [
       [1, 1],
       [3, 3],
@@ -447,92 +436,68 @@
 
     const rows = rowNumbers.length;
     const cols = columnNumbers.length;
-
     const storageKey = "tranqui-nonogram-1-progress";
 
     const grid = document.getElementById("grid");
     const rowClues = document.getElementById("rowClues");
     const columnClues = document.getElementById("columnClues");
-
     const undoButton = document.getElementById("undoButton");
     const clearButton = document.getElementById("clearButton");
     const downloadButton = document.getElementById("downloadButton");
 
-    const state = Array.from(
-      { length: rows },
-      () => Array(cols).fill(0)
-    );
-
+    const state = Array.from({ length: rows }, () => Array(cols).fill(0));
     const history = [];
-
     let longPressTimer = null;
     let longPressTriggered = false;
 
-    function createClues() {
-      rowClues.style.gridTemplateRows =
-        `repeat(${rows}, var(--cell-size))`;
 
-      columnClues.style.gridTemplateColumns =
-        `repeat(${cols}, var(--cell-size))`;
+    function createClues() {
+      rowClues.style.gridTemplateRows = `repeat(${rows}, var(--cell-size))`;
+      columnClues.style.gridTemplateColumns = `repeat(${cols}, var(--cell-size))`;
 
       rowNumbers.forEach((numbers) => {
         const clue = document.createElement("div");
         clue.className = "row-clue";
-
-        numbers.forEach((number) => {
+        numbers.forEach(number => {
           const span = document.createElement("span");
           span.textContent = number;
           clue.appendChild(span);
         });
-
         rowClues.appendChild(clue);
       });
 
       columnNumbers.forEach((numbers) => {
         const clue = document.createElement("div");
         clue.className = "column-clue";
-
-        numbers.forEach((number) => {
+        numbers.forEach(number => {
           const span = document.createElement("span");
           span.textContent = number;
           clue.appendChild(span);
         });
-
         columnClues.appendChild(clue);
       });
     }
 
     function createGrid() {
-      grid.style.gridTemplateColumns =
-        `repeat(${cols}, var(--cell-size))`;
-
-      grid.style.gridTemplateRows =
-        `repeat(${rows}, var(--cell-size))`;
+      grid.style.gridTemplateColumns = `repeat(${cols}, var(--cell-size))`;
+      grid.style.gridTemplateRows = `repeat(${rows}, var(--cell-size))`;
 
       for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
           const cell = document.createElement("button");
-
           cell.type = "button";
           cell.className = "cell";
           cell.dataset.row = row;
           cell.dataset.col = col;
+          cell.setAttribute("aria-label", `Row ${row + 1}, column ${col + 1}`);
 
-          cell.setAttribute(
-            "aria-label",
-            `Row ${row + 1}, column ${col + 1}`
-          );
-
-          if ((row + 1) % 5 === 0) {
-            cell.classList.add("major-row");
-          }
+          if ((row + 1) % 5 === 0) cell.classList.add("major-row");
 
           cell.addEventListener("click", () => {
             if (longPressTriggered) {
               longPressTriggered = false;
               return;
             }
-
             toggleFilled(row, col);
           });
 
@@ -543,28 +508,26 @@
 
           cell.addEventListener("pointerdown", (event) => {
             if (event.pointerType === "mouse") return;
-
             longPressTriggered = false;
-
             longPressTimer = window.setTimeout(() => {
               longPressTriggered = true;
               toggleCross(row, col);
             }, 500);
           });
 
-          ["pointerup", "pointercancel", "pointerleave"].forEach(
-            (eventName) => {
-              cell.addEventListener(eventName, () => {
-                if (longPressTimer) {
-                  window.clearTimeout(longPressTimer);
-                }
-              });
-            }
-          );
+          ["pointerup", "pointercancel", "pointerleave"].forEach(eventName => {
+            cell.addEventListener(eventName, () => {
+              if (longPressTimer) window.clearTimeout(longPressTimer);
+            });
+          });
 
           grid.appendChild(cell);
         }
       }
+    }
+
+    function updateUndoButton() {
+      undoButton.disabled = history.length === 0;
     }
 
     function addCellToHistory(row, col) {
@@ -574,7 +537,6 @@
         col,
         previousValue: state[row][col]
       });
-
       updateUndoButton();
     }
 
@@ -583,30 +545,19 @@
         type: "board",
         previousState: state.map((row) => [...row])
       });
-
       updateUndoButton();
-    }
-
-    function updateUndoButton() {
-      undoButton.disabled = history.length === 0;
     }
 
     function toggleFilled(row, col) {
       addCellToHistory(row, col);
-
-      state[row][col] =
-        state[row][col] === 1 ? 0 : 1;
-
+      state[row][col] = state[row][col] === 1 ? 0 : 1;
       renderCell(row, col);
       saveProgress();
     }
 
     function toggleCross(row, col) {
       addCellToHistory(row, col);
-
-      state[row][col] =
-        state[row][col] === 2 ? 0 : 2;
-
+      state[row][col] = state[row][col] === 2 ? 0 : 2;
       renderCell(row, col);
       saveProgress();
     }
@@ -614,17 +565,8 @@
     function renderCell(row, col) {
       const index = row * cols + col;
       const cell = grid.children[index];
-
-      cell.classList.toggle(
-        "filled",
-        state[row][col] === 1
-      );
-
-      cell.classList.toggle(
-        "crossed",
-        state[row][col] === 2
-      );
-
+      cell.classList.toggle("filled", state[row][col] === 1);
+      cell.classList.toggle("crossed", state[row][col] === 2);
       cell.setAttribute(
         "aria-pressed",
         state[row][col] === 1 ? "true" : "false"
@@ -640,34 +582,18 @@
     }
 
     function saveProgress() {
-      localStorage.setItem(
-        storageKey,
-        JSON.stringify(state)
-      );
+      localStorage.setItem(storageKey, JSON.stringify(state));
     }
 
     function loadProgress() {
       try {
-        const saved = JSON.parse(
-          localStorage.getItem(storageKey)
-        );
-
-        if (!Array.isArray(saved) || saved.length !== rows) {
-          return;
-        }
+        const saved = JSON.parse(localStorage.getItem(storageKey));
+        if (!Array.isArray(saved) || saved.length !== rows) return;
 
         saved.forEach((savedRow, row) => {
-          if (
-            !Array.isArray(savedRow) ||
-            savedRow.length !== cols
-          ) {
-            return;
-          }
-
+          if (!Array.isArray(savedRow) || savedRow.length !== cols) return;
           savedRow.forEach((value, col) => {
-            state[row][col] =
-              [0, 1, 2].includes(value) ? value : 0;
-
+            state[row][col] = [0, 1, 2].includes(value) ? value : 0;
             renderCell(row, col);
           });
         });
@@ -676,29 +602,22 @@
       }
     }
 
+
     undoButton.addEventListener("click", () => {
       const lastAction = history.pop();
-
       if (!lastAction) return;
 
       if (lastAction.type === "cell") {
-        state[lastAction.row][lastAction.col] =
-          lastAction.previousValue;
-
-        renderCell(
-          lastAction.row,
-          lastAction.col
-        );
+        state[lastAction.row][lastAction.col] = lastAction.previousValue;
+        renderCell(lastAction.row, lastAction.col);
       }
 
       if (lastAction.type === "board") {
         for (let row = 0; row < rows; row++) {
           for (let col = 0; col < cols; col++) {
-            state[row][col] =
-              lastAction.previousState[row][col];
+            state[row][col] = lastAction.previousState[row][col];
           }
         }
-
         renderAllCells();
       }
 
@@ -707,16 +626,12 @@
     });
 
     clearButton.addEventListener("click", () => {
-      const confirmed = window.confirm(
-        "Do you want to clear all your nonogram progress?"
-      );
-
+      const confirmed = window.confirm("Do you want to clear all your nonogram progress?");
       if (!confirmed) return;
 
       const hasProgress = state.some((row) =>
         row.some((value) => value !== 0)
       );
-
       if (!hasProgress) return;
 
       addBoardToHistory();
@@ -732,82 +647,53 @@
     });
 
     downloadButton.addEventListener("click", () => {
-      const cellSize = 42;
+      const cell = 42;
       const clueSpace = 150;
       const topSpace = 170;
       const margin = 60;
       const footerSpace = 110;
-
       const canvas = document.createElement("canvas");
 
-      canvas.width =
-        margin * 2 +
-        clueSpace +
-        cols * cellSize;
-
-      canvas.height =
-        margin * 2 +
-        topSpace +
-        rows * cellSize +
-        footerSpace;
+      canvas.width = margin * 2 + clueSpace + cols * cell;
+      canvas.height = margin * 2 + topSpace + rows * cell + footerSpace;
 
       const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#f4ead6";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      ctx.fillStyle = "#FEF9EE";
-      ctx.fillRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-      );
-
-      ctx.fillStyle = "#2B1C13";
+      ctx.fillStyle = "#493f37";
       ctx.textAlign = "center";
-      ctx.font = "700 38px Lora, Georgia, serif";
+      ctx.font = "700 38px Georgia";
+      ctx.fillText("NONOGRAM #1", canvas.width / 2, 54);
 
-      ctx.fillText(
-        "NONOGRAM #1",
-        canvas.width / 2,
-        54
-      );
-
-      ctx.fillStyle = "#F7875C";
-      ctx.font = "700 15px Lora, Georgia, serif";
-
-      ctx.fillText(
-        "TRANQUI PUZZLE CLUB",
-        canvas.width / 2,
-        82
-      );
+      ctx.fillStyle = "#7f493e";
+      ctx.font = "700 15px Arial";
+      ctx.fillText("TRANQUI PUZZLE CLUB", canvas.width / 2, 82);
 
       const originX = margin + clueSpace;
       const originY = margin + topSpace;
 
-      ctx.font = "600 15px Lora, Georgia, serif";
-      ctx.fillStyle = "#2B1C13";
+      ctx.font = "700 15px Arial";
+      ctx.fillStyle = "#493f37";
 
       rowNumbers.forEach((numbers, row) => {
         ctx.textAlign = "right";
         ctx.textBaseline = "middle";
-
         ctx.fillText(
           numbers.join("   "),
           originX - 12,
-          originY + row * cellSize + cellSize / 2
+          originY + row * cell + cell / 2
         );
       });
 
       columnNumbers.forEach((numbers, col) => {
         ctx.textAlign = "center";
         ctx.textBaseline = "bottom";
-
         numbers.forEach((number, index) => {
-          const reverseIndex =
-            numbers.length - 1 - index;
-
+          const reverseIndex = numbers.length - 1 - index;
           ctx.fillText(
             number,
-            originX + col * cellSize + cellSize / 2,
+            originX + col * cell + cell / 2,
             originY - 10 - reverseIndex * 20
           );
         });
@@ -815,70 +701,33 @@
 
       for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
-          const x = originX + col * cellSize;
-          const y = originY + row * cellSize;
+          const x = originX + col * cell;
+          const y = originY + row * cell;
 
-          ctx.fillStyle =
-            state[row][col] === 1
-              ? "#F7875C"
-              : "#FEF9EE";
-
-          ctx.fillRect(
-            x,
-            y,
-            cellSize,
-            cellSize
-          );
+          ctx.fillStyle = state[row][col] === 1 ? "#493f37" : "#f8f0df";
+          ctx.fillRect(x, y, cell, cell);
 
           if (state[row][col] === 2) {
-            ctx.strokeStyle = "#F7875C";
+            ctx.strokeStyle = "#7f493e";
             ctx.lineWidth = 2.5;
-
             ctx.beginPath();
-
             ctx.moveTo(x + 10, y + 10);
-
-            ctx.lineTo(
-              x + cellSize - 10,
-              y + cellSize - 10
-            );
-
-            ctx.moveTo(
-              x + cellSize - 10,
-              y + 10
-            );
-
-            ctx.lineTo(
-              x + 10,
-              y + cellSize - 10
-            );
-
+            ctx.lineTo(x + cell - 10, y + cell - 10);
+            ctx.moveTo(x + cell - 10, y + 10);
+            ctx.lineTo(x + 10, y + cell - 10);
             ctx.stroke();
           }
 
-          ctx.strokeStyle = "#E8D8C2";
-
-          ctx.lineWidth =
-            (col + 1) % 5 === 0 ||
-            (row + 1) % 5 === 0
-              ? 2.5
-              : 1;
-
-          ctx.strokeRect(
-            x,
-            y,
-            cellSize,
-            cellSize
-          );
+          ctx.strokeStyle = "#65584d";
+          ctx.lineWidth = ((col + 1) % 5 === 0 || (row + 1) % 5 === 0) ? 2.5 : 1;
+          ctx.strokeRect(x, y, cell, cell);
         }
       }
 
-      ctx.fillStyle = "#2B1C13";
+      ctx.fillStyle = "#7f493e";
       ctx.textAlign = "center";
       ctx.textBaseline = "alphabetic";
-      ctx.font =
-        "500 italic 17px Lora, Georgia, serif";
-
+      ctx.font = "700 17px Georgia";
       ctx.fillText(
         "The solution will be available next week.",
         canvas.width / 2,
@@ -886,10 +735,8 @@
       );
 
       const link = document.createElement("a");
-
       link.download = "tranqui-nonogram-1.png";
       link.href = canvas.toDataURL("image/png");
-
       link.click();
     });
 
