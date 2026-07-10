@@ -227,7 +227,7 @@
 
     button.action {
       appearance: none;
-      min-width: 168px;
+      min-width: 150px;
       padding: 13px 18px;
       border: 1px solid var(--ink);
       border-radius: 0;
@@ -239,25 +239,35 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
       cursor: pointer;
-      transition: transform 0.15s ease, background 0.15s ease;
+      transition:
+        transform 0.15s ease,
+        background 0.15s ease,
+        opacity 0.15s ease;
     }
 
-    button.action:nth-child(2) {
+    button.action.secondary {
       color: var(--ink);
       background: var(--peach);
     }
 
-    button.action:hover {
+    button.action:hover:not(:disabled) {
       transform: translateY(-2px);
       background: var(--ink);
+      color: var(--cream);
     }
 
-    button.action:nth-child(2):hover {
+    button.action.secondary:hover:not(:disabled) {
       background: #F6D9A9;
+      color: var(--ink);
     }
 
-    button.action:active {
+    button.action:active:not(:disabled) {
       transform: translateY(0);
+    }
+
+    button.action:disabled {
+      opacity: 0.42;
+      cursor: not-allowed;
     }
 
     .help {
@@ -319,6 +329,10 @@
       .column-clue {
         min-height: calc(var(--cell-size) * 2.8);
       }
+
+      button.action {
+        min-width: 135px;
+      }
     }
   </style>
 </head>
@@ -350,11 +364,28 @@
       </div>
 
       <div class="controls">
-        <button class="action" id="clearButton" type="button">
+        <button
+          class="action secondary"
+          id="undoButton"
+          type="button"
+          disabled
+        >
+          Undo
+        </button>
+
+        <button
+          class="action"
+          id="clearButton"
+          type="button"
+        >
           Clear all
         </button>
 
-        <button class="action" id="downloadButton" type="button">
+        <button
+          class="action secondary"
+          id="downloadButton"
+          type="button"
+        >
           Download image
         </button>
       </div>
@@ -422,6 +453,8 @@
     const grid = document.getElementById("grid");
     const rowClues = document.getElementById("rowClues");
     const columnClues = document.getElementById("columnClues");
+
+    const undoButton = document.getElementById("undoButton");
     const clearButton = document.getElementById("clearButton");
     const downloadButton = document.getElementById("downloadButton");
 
@@ -429,6 +462,8 @@
       { length: rows },
       () => Array(cols).fill(0)
     );
+
+    const history = [];
 
     let longPressTimer = null;
     let longPressTriggered = false;
@@ -532,14 +567,46 @@
       }
     }
 
+    function addCellToHistory(row, col) {
+      history.push({
+        type: "cell",
+        row,
+        col,
+        previousValue: state[row][col]
+      });
+
+      updateUndoButton();
+    }
+
+    function addBoardToHistory() {
+      history.push({
+        type: "board",
+        previousState: state.map((row) => [...row])
+      });
+
+      updateUndoButton();
+    }
+
+    function updateUndoButton() {
+      undoButton.disabled = history.length === 0;
+    }
+
     function toggleFilled(row, col) {
-      state[row][col] = state[row][col] === 1 ? 0 : 1;
+      addCellToHistory(row, col);
+
+      state[row][col] =
+        state[row][col] === 1 ? 0 : 1;
+
       renderCell(row, col);
       saveProgress();
     }
 
     function toggleCross(row, col) {
-      state[row][col] = state[row][col] === 2 ? 0 : 2;
+      addCellToHistory(row, col);
+
+      state[row][col] =
+        state[row][col] === 2 ? 0 : 2;
+
       renderCell(row, col);
       saveProgress();
     }
@@ -562,6 +629,14 @@
         "aria-pressed",
         state[row][col] === 1 ? "true" : "false"
       );
+    }
+
+    function renderAllCells() {
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+          renderCell(row, col);
+        }
+      }
     }
 
     function saveProgress() {
@@ -601,6 +676,36 @@
       }
     }
 
+    undoButton.addEventListener("click", () => {
+      const lastAction = history.pop();
+
+      if (!lastAction) return;
+
+      if (lastAction.type === "cell") {
+        state[lastAction.row][lastAction.col] =
+          lastAction.previousValue;
+
+        renderCell(
+          lastAction.row,
+          lastAction.col
+        );
+      }
+
+      if (lastAction.type === "board") {
+        for (let row = 0; row < rows; row++) {
+          for (let col = 0; col < cols; col++) {
+            state[row][col] =
+              lastAction.previousState[row][col];
+          }
+        }
+
+        renderAllCells();
+      }
+
+      saveProgress();
+      updateUndoButton();
+    });
+
     clearButton.addEventListener("click", () => {
       const confirmed = window.confirm(
         "Do you want to clear all your nonogram progress?"
@@ -608,14 +713,22 @@
 
       if (!confirmed) return;
 
+      const hasProgress = state.some((row) =>
+        row.some((value) => value !== 0)
+      );
+
+      if (!hasProgress) return;
+
+      addBoardToHistory();
+
       for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
           state[row][col] = 0;
-          renderCell(row, col);
         }
       }
 
-      localStorage.removeItem(storageKey);
+      renderAllCells();
+      saveProgress();
     });
 
     downloadButton.addEventListener("click", () => {
@@ -651,6 +764,7 @@
       ctx.fillStyle = "#2B1C13";
       ctx.textAlign = "center";
       ctx.font = "700 38px Lora, Georgia, serif";
+
       ctx.fillText(
         "NONOGRAM #1",
         canvas.width / 2,
@@ -659,6 +773,7 @@
 
       ctx.fillStyle = "#F7875C";
       ctx.font = "700 15px Lora, Georgia, serif";
+
       ctx.fillText(
         "TRANQUI PUZZLE CLUB",
         canvas.width / 2,
@@ -722,6 +837,7 @@
             ctx.beginPath();
 
             ctx.moveTo(x + 10, y + 10);
+
             ctx.lineTo(
               x + cellSize - 10,
               y + cellSize - 10
@@ -760,7 +876,8 @@
       ctx.fillStyle = "#2B1C13";
       ctx.textAlign = "center";
       ctx.textBaseline = "alphabetic";
-      ctx.font = "500 italic 17px Lora, Georgia, serif";
+      ctx.font =
+        "500 italic 17px Lora, Georgia, serif";
 
       ctx.fillText(
         "The solution will be available next week.",
@@ -779,6 +896,7 @@
     createClues();
     createGrid();
     loadProgress();
+    updateUndoButton();
   </script>
 </body>
 </html>
