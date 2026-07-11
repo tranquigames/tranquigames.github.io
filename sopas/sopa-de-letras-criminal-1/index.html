@@ -217,16 +217,13 @@
     button.action:disabled { opacity: .45; cursor: not-allowed; transform: none; }
 
     .solution-note {
-      width: fit-content;
-      max-width: 100%;
+      max-width: 650px;
       margin: 34px auto 0;
-      padding: 12px 18px;
-      border: 1px solid var(--ink);
-      background: var(--peach);
-      font-size: 1rem;
-      font-weight: 600;
+      color: var(--muted);
+      font-size: .92rem;
+      font-weight: 500;
       font-style: italic;
-      line-height: 1.5;
+      line-height: 1.6;
       text-align: center;
     }
 
@@ -267,17 +264,13 @@
         <div class="word-grid" id="wordGrid" aria-label="Sopa de letras interactiva"></div>
       </div>
 
-      <p class="instructions-small">
-        Hacé clic o tocá cada letra para marcarla o desmarcarla. Podés seleccionar las letras de cada palabra, de a una y en el orden que prefieras.
-      </p>
-
       <section class="word-bank" aria-labelledby="wordListTitle">
         <h2 class="section-title" id="wordListTitle">Palabras a encontrar</h2>
         <ul class="word-list" id="wordList"></ul>
       </section>
 
       <p class="instructions-small">
-        Tocá una palabra de la lista para tacharla cuando creas que la encontraste. Tu progreso se guarda automáticamente en este dispositivo.
+        Hacé clic o tocá las letras para marcarlas y tocá las palabras de la lista para tacharlas cuando las encuentres. Podés volver a tocarlas para desmarcarlas. Tu progreso se guarda automáticamente en este dispositivo.
       </p>
 
       <section class="answers" aria-label="Resolución del misterio">
@@ -308,20 +301,17 @@
   </main>
 
   <script>
-    // Cambié una sola letra respecto de la imagen original para que MARIA no aparezca
-    // accidentalmente en vertical. De este modo, las tres palabras ausentes son
-    // MARIA, MARTILLO y DORMITORIO.
     const puzzleRows = [
-      "SBNOSCURAD",
-      "HAYSOGAYPT",
-      "AÑBOSQUEAJ",
-      "COSILLAFZU",
-      "HMAAISLADA",
-      "AERCOCINAN",
-      "NATURALEZA",
-      "ARÉVFRÍAOJ",
-      "NINLAUTARO",
-      "AACUCHILLO"
+      "NZVSARTÉNV",
+      "CAQMARIALA",
+      "DUTHOFRÍAI",
+      "JBCUASWRUS",
+      "UOSHRCCXTL",
+      "ASOSIAHUAA",
+      "NQGAILLARD",
+      "PUANKLLEOA",
+      "AEBAÑOLOZE",
+      "ZCOCINAAVA"
     ];
 
     const words = [
