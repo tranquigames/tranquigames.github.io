@@ -12,7 +12,9 @@
       --ink:#2B1C13;
       --line:#2B1C13;
       --cell:38px;
-      --label:145px;
+      --label:170px;
+      --group-header:34px;
+      --item-header:112px;
     }
 
     *{box-sizing:border-box}
@@ -108,7 +110,10 @@
     .logic-grid{
       display:grid;
       grid-template-columns: var(--label) repeat(15, var(--cell));
-      grid-template-rows: 92px repeat(15, var(--cell));
+      grid-template-rows:
+        var(--group-header)
+        var(--item-header)
+        repeat(15, var(--cell));
       width:max-content;
       user-select:none;
       background:transparent;
@@ -116,24 +121,23 @@
 
     .corner{
       grid-column:1;
-      grid-row:1;
+      grid-row:1 / span 2;
     }
 
     .col-group{
       display:flex;
-      align-items:flex-start;
+      align-items:center;
       justify-content:center;
       font-weight:700;
       font-size:1.05rem;
-      padding-top:2px;
-      border-bottom:3px solid var(--line);
+      border-bottom:1px solid var(--line);
     }
 
     .col-label{
       display:flex;
       align-items:flex-end;
       justify-content:center;
-      padding-bottom:7px;
+      padding-bottom:8px;
       writing-mode:vertical-rl;
       transform:rotate(180deg);
       font-size:.88rem;
@@ -212,18 +216,13 @@
     @media (max-width:760px){
       :root{
         --cell:34px;
-        --label:128px;
+        --label:145px;
+        --item-header:104px;
       }
 
       body{padding:22px 10px 40px}
-
       .clues ol{columns:1}
-
       .clues{padding:18px}
-
-      .logic-grid{
-        grid-template-rows:88px repeat(15, var(--cell));
-      }
     }
   </style>
 </head>
@@ -267,40 +266,18 @@
   </main>
 
   <script>
-    const categories = [
-      {
-        name: "Psicólogo",
-        items: ["Ardit", "Collado", "French", "Moldes", "Torres"]
-      },
-      {
-        name: "Problema",
-        items: ["Divorcio", "Fobias", "Juego", "Padres", "Timidez"]
-      },
-      {
-        name: "Hace",
-        items: ["2 meses", "3 meses", "6 meses", "7 meses", "9 meses"]
-      }
+    const rowGroups = [
+      { name: "Psicólogo", items: ["Ardit", "Collado", "French", "Moldes", "Torres"] },
+      { name: "Problema", items: ["Divorcio", "Fobias", "Juego", "Padres", "Timidez"] },
+      { name: "Hace", items: ["2 meses", "3 meses", "6 meses", "7 meses", "9 meses"] }
     ];
 
-    const columns = [
-      {
-        name: "Integrantes",
-        items: ["4", "5", "6", "7", "8"]
-      },
-      {
-        name: "Hace",
-        items: ["2 meses", "3 meses", "6 meses", "7 meses", "9 meses"]
-      },
-      {
-        name: "Problema",
-        items: ["Divorcio", "Fobias", "Juego", "Padres", "Timidez"]
-      }
+    const colGroups = [
+      { name: "Integrantes", items: ["4", "5", "6", "7", "8"] },
+      { name: "Hace", items: ["2 meses", "3 meses", "6 meses", "7 meses", "9 meses"] },
+      { name: "Problema", items: ["Divorcio", "Fobias", "Juego", "Padres", "Timidez"] }
     ];
 
-    // Qué bloques existen en la grilla triangular:
-    // Psicólogo × Integrantes / Hace / Problema
-    // Problema × Integrantes / Hace
-    // Hace × Integrantes
     const activeBlocks = {
       0: [0, 1, 2],
       1: [0, 1],
@@ -320,30 +297,33 @@
       return el;
     }
 
-    // Esquina superior izquierda
-    addElement("corner", 1, 1);
+    addElement("corner", 1, "1 / span 2");
 
-    // Encabezados de grupos de columnas
-    columns.forEach((group, groupIndex) => {
+    colGroups.forEach((group, groupIndex) => {
       const startCol = 2 + groupIndex * 5;
-      const title = addElement("col-group", `${startCol} / span 5`, 1, group.name);
-      title.style.alignSelf = "start";
-    });
 
-    // Etiquetas verticales de columnas
-    columns.forEach((group, groupIndex) => {
+      const groupTitle = addElement(
+        "col-group",
+        `${startCol} / span 5`,
+        1,
+        group.name
+      );
+
+      groupTitle.style.borderLeft = "3px solid var(--line)";
+      groupTitle.style.borderRight = "3px solid var(--line)";
+
       group.items.forEach((item, itemIndex) => {
-        const col = 2 + groupIndex * 5 + itemIndex;
-        const label = addElement("col-label", col, 1, item);
+        const col = startCol + itemIndex;
+        const label = addElement("col-label", col, 2, item);
+
         if (itemIndex === 0) label.style.borderLeft = "3px solid var(--line)";
         if (itemIndex === 4) label.style.borderRight = "3px solid var(--line)";
       });
     });
 
-    // Filas, etiquetas y celdas
-    categories.forEach((rowGroup, rowGroupIndex) => {
+    rowGroups.forEach((rowGroup, rowGroupIndex) => {
       rowGroup.items.forEach((rowItem, itemIndex) => {
-        const row = 2 + rowGroupIndex * 5 + itemIndex;
+        const row = 3 + rowGroupIndex * 5 + itemIndex;
 
         const label = addElement(
           "row-label" + (itemIndex === 0 ? " group-start" : ""),
@@ -362,7 +342,7 @@
         itemText.textContent = rowItem;
         label.appendChild(itemText);
 
-        columns.forEach((colGroup, colGroupIndex) => {
+        colGroups.forEach((colGroup, colGroupIndex) => {
           colGroup.items.forEach((_, colItemIndex) => {
             const col = 2 + colGroupIndex * 5 + colItemIndex;
             const isActive = activeBlocks[rowGroupIndex].includes(colGroupIndex);
