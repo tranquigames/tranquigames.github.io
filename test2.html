@@ -3,471 +3,418 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bandas de música — Puzzle de lógica</title>
+  <title>Grupos de reflexión — Puzzle de lógica</title>
   <style>
     :root{
       --cream:#FEF9EE;
       --peach:#FEE9C5;
       --accent:#F7875C;
       --ink:#2B1C13;
-      --paper:#fffdf8;
-      --line:#7c675b;
-      --soft:#eadfce;
-      --yes:#d9efd8;
-      --no:#f4d5cf;
+      --line:#2B1C13;
+      --cell:38px;
+      --label:145px;
     }
 
     *{box-sizing:border-box}
 
     body{
       margin:0;
+      padding:32px 18px 56px;
       background:var(--cream);
       color:var(--ink);
       font-family:Georgia, "Times New Roman", serif;
-      line-height:1.5;
     }
 
     .page{
-      width:min(1180px, 94vw);
-      margin:32px auto 60px;
-    }
-
-    .hero{
-      background:var(--peach);
-      border:2px solid var(--ink);
-      border-radius:18px;
-      padding:28px;
-      box-shadow:6px 6px 0 rgba(43,28,19,.14);
-      margin-bottom:24px;
+      width:min(1180px, 100%);
+      margin:0 auto;
     }
 
     h1{
-      margin:0 0 8px;
-      font-size:clamp(2rem,4vw,3.4rem);
-      line-height:1.05;
+      margin:0 0 14px;
+      font-size:clamp(2rem, 5vw, 3.8rem);
+      line-height:1;
     }
 
     .intro{
-      margin:0;
-      font-size:1.08rem;
-      max-width:850px;
-    }
-
-    .layout{
-      display:grid;
-      grid-template-columns:minmax(0, 1fr) minmax(320px, 430px);
-      gap:24px;
-      align-items:start;
-    }
-
-    .card{
-      background:var(--paper);
-      border:2px solid var(--ink);
-      border-radius:16px;
-      padding:20px;
-      box-shadow:5px 5px 0 rgba(43,28,19,.10);
-    }
-
-    h2{
-      margin:0 0 14px;
-      font-size:1.45rem;
-    }
-
-    .instructions{
-      margin:0 0 14px;
-      font-size:.98rem;
+      max-width:900px;
+      margin:0 0 28px;
+      font-size:1.1rem;
+      line-height:1.55;
     }
 
     .clues{
+      background:#fffaf0;
+      border:2px solid var(--ink);
+      border-radius:14px;
+      padding:22px 26px;
+      margin-bottom:34px;
+      box-shadow:6px 6px 0 var(--peach);
+    }
+
+    .clues h2{
+      margin:0 0 12px;
+      font-size:1.55rem;
+    }
+
+    .clues ol{
       margin:0;
       padding-left:1.4rem;
+      columns:2;
+      column-gap:44px;
     }
 
     .clues li{
+      break-inside:avoid;
       margin:0 0 12px;
-      padding-left:.25rem;
+      padding-left:4px;
+      line-height:1.45;
+      font-size:1rem;
+    }
+
+    .instructions{
+      margin:0 0 18px;
+      font-size:.98rem;
     }
 
     .toolbar{
       display:flex;
-      flex-wrap:wrap;
       gap:10px;
-      margin-bottom:14px;
+      flex-wrap:wrap;
+      margin-bottom:20px;
     }
 
     button{
-      appearance:none;
       border:2px solid var(--ink);
-      background:var(--paper);
+      background:var(--accent);
       color:var(--ink);
       border-radius:999px;
-      padding:9px 15px;
-      font:inherit;
-      font-weight:700;
+      padding:9px 16px;
+      font:700 0.95rem Georgia, "Times New Roman", serif;
       cursor:pointer;
-      box-shadow:2px 2px 0 rgba(43,28,19,.18);
+      box-shadow:3px 3px 0 var(--ink);
     }
 
-    button:hover{background:var(--peach)}
     button:active{
-      transform:translate(1px,1px);
-      box-shadow:1px 1px 0 rgba(43,28,19,.18);
+      transform:translate(2px,2px);
+      box-shadow:1px 1px 0 var(--ink);
     }
 
-    .grid-wrap{
+    .grid-scroll{
       overflow:auto;
-      padding-bottom:8px;
+      padding:8px 8px 18px;
     }
 
     .logic-grid{
       display:grid;
-      gap:18px;
-      min-width:720px;
+      grid-template-columns: var(--label) repeat(15, var(--cell));
+      grid-template-rows: 92px repeat(15, var(--cell));
+      width:max-content;
+      user-select:none;
+      background:transparent;
     }
 
-    .matrix{
-      border-collapse:collapse;
-      background:white;
+    .corner{
+      grid-column:1;
+      grid-row:1;
     }
 
-    .matrix caption{
-      text-align:left;
+    .col-group{
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
       font-weight:700;
-      margin-bottom:7px;
       font-size:1.05rem;
+      padding-top:2px;
+      border-bottom:3px solid var(--line);
     }
 
-    .matrix th,
-    .matrix td{
-      border:1px solid var(--line);
-    }
-
-    .matrix thead th{
-      height:108px;
-      min-width:45px;
-      padding:0;
-      vertical-align:bottom;
-      background:#faf4e9;
-    }
-
-    .matrix thead th.corner{
-      min-width:140px;
-      padding:8px;
-      height:auto;
-      vertical-align:middle;
-      text-align:left;
-    }
-
-    .matrix thead th span{
-      display:inline-block;
+    .col-label{
+      display:flex;
+      align-items:flex-end;
+      justify-content:center;
+      padding-bottom:7px;
       writing-mode:vertical-rl;
       transform:rotate(180deg);
-      padding:8px 4px;
-      white-space:nowrap;
-      font-size:.92rem;
+      font-size:.88rem;
+      font-weight:700;
+      line-height:1;
+      border-bottom:3px solid var(--line);
     }
 
-    .matrix tbody th{
-      width:140px;
-      min-width:140px;
-      text-align:right;
-      padding:6px 10px;
-      background:#faf4e9;
-      font-size:.94rem;
+    .row-label{
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      padding-right:12px;
+      font-weight:700;
+      font-size:.98rem;
       white-space:nowrap;
+    }
+
+    .row-label.group-start{
+      border-top:3px solid var(--line);
+    }
+
+    .row-label .group-name{
+      margin-right:auto;
+      font-size:1.08rem;
+      font-style:italic;
     }
 
     .cell{
-      width:45px;
-      height:45px;
-      padding:0;
-      text-align:center;
-      vertical-align:middle;
-      cursor:pointer;
-      user-select:none;
-      font-family:Arial, sans-serif;
-      font-weight:800;
-      font-size:1.25rem;
-      transition:background .12s ease;
-    }
-
-    .cell:hover{background:#fff4db}
-    .cell.no{
-      background:var(--no);
-      color:#9d2f20;
-    }
-    .cell.yes{
-      background:var(--yes);
-      color:#236322;
-    }
-
-    .legend{
+      width:var(--cell);
+      height:var(--cell);
+      border-right:1px solid var(--line);
+      border-bottom:1px solid var(--line);
+      background:#fffdf8;
       display:flex;
-      gap:14px;
-      flex-wrap:wrap;
-      margin-top:10px;
-      font-size:.92rem;
-    }
-
-    .legend span{
-      display:inline-flex;
       align-items:center;
-      gap:6px;
+      justify-content:center;
+      font-family:Arial, sans-serif;
+      font-size:1.35rem;
+      font-weight:700;
+      cursor:pointer;
     }
 
-    .swatch{
-      width:22px;
-      height:22px;
-      border:1px solid var(--line);
-      display:inline-grid;
-      place-items:center;
-      font-family:Arial,sans-serif;
-      font-weight:bold;
+    .cell.top{
+      border-top:3px solid var(--line);
     }
 
-    .category-list{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:12px;
-      margin-top:16px;
+    .cell.left{
+      border-left:3px solid var(--line);
     }
 
-    .category{
-      border:1px solid var(--soft);
-      border-radius:12px;
-      padding:12px;
-      background:#fffaf1;
+    .cell.group-right{
+      border-right:3px solid var(--line);
     }
 
-    .category strong{
-      display:block;
-      margin-bottom:5px;
+    .cell.group-bottom{
+      border-bottom:3px solid var(--line);
     }
 
-    .category p{
-      margin:0;
-      font-size:.94rem;
+    .cell.filled{
+      background:var(--accent);
     }
 
-    @media (max-width:900px){
-      .layout{grid-template-columns:1fr}
-      .clue-card{order:-1}
+    .cell.cross::before{
+      content:"×";
+      font-size:1.55rem;
+      line-height:1;
+    }
+
+    .blocked{
+      background:transparent;
+      border:none;
+      pointer-events:none;
+    }
+
+    @media (max-width:760px){
+      :root{
+        --cell:34px;
+        --label:128px;
+      }
+
+      body{padding:22px 10px 40px}
+
+      .clues ol{columns:1}
+
+      .clues{padding:18px}
+
+      .logic-grid{
+        grid-template-rows:88px repeat(15, var(--cell));
+      }
     }
   </style>
 </head>
 <body>
   <main class="page">
-    <section class="hero">
-      <h1>Bandas de música</h1>
-      <p class="intro">
-        Cinco bandas tienen distintos géneros musicales, antigüedades y cantidades de integrantes.
-        Usá las pistas para descubrir qué combinación corresponde a cada una.
-      </p>
+    <h1>Grupos de reflexión</h1>
+
+    <p class="intro">
+      En momentos de crisis es bueno poder compartir los problemas y pedir ayuda.
+      Descubrí qué tema trata cada psicólogo, hace cuánto se formó cada grupo y
+      cuántas personas lo integran.
+    </p>
+
+    <section class="clues">
+      <h2>Pistas</h2>
+      <ol>
+        <li>Los que se reúnen para tratar los problemas que tienen con sus padres formaron el grupo después que los que asisten al consultorio del Lic. French.</li>
+        <li>El grupo del Lic. Torres, que tiene más de 6 integrantes, no trata el tema del divorcio.</li>
+        <li>El Lic. Collado formó un grupo hace 7 meses y en él no tratan ni de fobias ni de juego.</li>
+        <li>El grupo más numeroso no trabaja con el Lic. Ardit. Este profesional se dedica especialmente a problemas de relación con los padres.</li>
+        <li>Los que reflexionan acerca del juego llevan trabajando juntos un mes más que los que acompaña el Lic. Moldes.</li>
+        <li>Ni el grupo que se formó hace 3 meses ni el otro que tiene 5 integrantes son coordinados por el Lic. French.</li>
+        <li>El Lic. Moldes, especialista en problemas de timidez, conformó un grupo de 6 personas.</li>
+        <li>Hace 2 meses se formó un grupo más numeroso que el que reflexiona acerca de las fobias, y 5 meses antes empezó a trabajar el grupo de 8 integrantes.</li>
+      </ol>
     </section>
 
-    <div class="layout">
-      <section class="card">
-        <h2>Grilla de deducción</h2>
-        <p class="instructions">
-          Hacé clic en una casilla para marcar una <strong>X</strong>; hacé clic otra vez para marcar una
-          <strong>✓</strong>; un tercer clic la deja vacía.
-        </p>
+    <p class="instructions">
+      <strong>Clic izquierdo:</strong> rellenar una casilla.
+      <strong>Clic derecho:</strong> marcar una X.
+    </p>
 
-        <div class="toolbar">
-          <button type="button" id="undoBtn">Deshacer</button>
-          <button type="button" id="clearBtn">Limpiar grilla</button>
-        </div>
+    <div class="toolbar">
+      <button type="button" id="undoBtn">Deshacer</button>
+      <button type="button" id="clearBtn">Limpiar grilla</button>
+    </div>
 
-        <div class="grid-wrap">
-          <div id="logicGrid" class="logic-grid"></div>
-        </div>
-
-        <div class="legend">
-          <span><span class="swatch">X</span> No corresponde</span>
-          <span><span class="swatch">✓</span> Corresponde</span>
-        </div>
-
-        <div class="category-list">
-          <div class="category">
-            <strong>Bandas</strong>
-            <p>Los Cometas, Medianoche, Ruido Blanco, Saturno, Las Luciérnagas</p>
-          </div>
-          <div class="category">
-            <strong>Géneros</strong>
-            <p>Rock, Pop, Jazz, Electrónica, Punk</p>
-          </div>
-          <div class="category">
-            <strong>Antigüedad</strong>
-            <p>2, 3, 6, 7 y 9 años</p>
-          </div>
-          <div class="category">
-            <strong>Integrantes</strong>
-            <p>4, 5, 6, 7 y 8 integrantes</p>
-          </div>
-        </div>
-      </section>
-
-      <aside class="card clue-card">
-        <h2>Pistas</h2>
-        <ol class="clues">
-          <li>
-            La banda de <strong>electrónica</strong> se formó después que
-            <strong>Ruido Blanco</strong>.
-          </li>
-          <li>
-            <strong>Las Luciérnagas</strong>, que tiene más de 6 integrantes,
-            no toca <strong>rock</strong>.
-          </li>
-          <li>
-            <strong>Medianoche</strong> se formó hace 7 años y no toca ni
-            <strong>pop</strong> ni <strong>jazz</strong>.
-          </li>
-          <li>
-            La banda más numerosa no es <strong>Los Cometas</strong>.
-            <strong>Los Cometas</strong> toca <strong>electrónica</strong>.
-          </li>
-          <li>
-            La banda de <strong>jazz</strong> lleva tocando junta un año más que
-            <strong>Saturno</strong>.
-          </li>
-          <li>
-            <strong>Ruido Blanco</strong> no se formó hace 3 años ni tiene
-            5 integrantes.
-          </li>
-          <li>
-            <strong>Saturno</strong> toca <strong>punk</strong> y tiene
-            6 integrantes.
-          </li>
-          <li>
-            La banda que se formó hace 2 años tiene más integrantes que la banda de
-            <strong>pop</strong>. La banda de 8 integrantes se formó cinco años antes.
-          </li>
-        </ol>
-      </aside>
+    <div class="grid-scroll">
+      <div class="logic-grid" id="logicGrid" aria-label="Grilla de lógica interactiva"></div>
     </div>
   </main>
 
   <script>
-    const categories = {
-      bandas: ["Los Cometas", "Medianoche", "Ruido Blanco", "Saturno", "Las Luciérnagas"],
-      generos: ["Rock", "Pop", "Jazz", "Electrónica", "Punk"],
-      antiguedad: ["2 años", "3 años", "6 años", "7 años", "9 años"],
-      integrantes: ["4", "5", "6", "7", "8"]
-    };
-
-    const matrices = [
-      ["Bandas", categories.bandas, "Integrantes", categories.integrantes],
-      ["Bandas", categories.bandas, "Antigüedad", categories.antiguedad],
-      ["Bandas", categories.bandas, "Género musical", categories.generos],
-      ["Género musical", categories.generos, "Integrantes", categories.integrantes],
-      ["Género musical", categories.generos, "Antigüedad", categories.antiguedad],
-      ["Antigüedad", categories.antiguedad, "Integrantes", categories.integrantes]
+    const categories = [
+      {
+        name: "Psicólogo",
+        items: ["Ardit", "Collado", "French", "Moldes", "Torres"]
+      },
+      {
+        name: "Problema",
+        items: ["Divorcio", "Fobias", "Juego", "Padres", "Timidez"]
+      },
+      {
+        name: "Hace",
+        items: ["2 meses", "3 meses", "6 meses", "7 meses", "9 meses"]
+      }
     ];
+
+    const columns = [
+      {
+        name: "Integrantes",
+        items: ["4", "5", "6", "7", "8"]
+      },
+      {
+        name: "Hace",
+        items: ["2 meses", "3 meses", "6 meses", "7 meses", "9 meses"]
+      },
+      {
+        name: "Problema",
+        items: ["Divorcio", "Fobias", "Juego", "Padres", "Timidez"]
+      }
+    ];
+
+    // Qué bloques existen en la grilla triangular:
+    // Psicólogo × Integrantes / Hace / Problema
+    // Problema × Integrantes / Hace
+    // Hace × Integrantes
+    const activeBlocks = {
+      0: [0, 1, 2],
+      1: [0, 1],
+      2: [0]
+    };
 
     const grid = document.getElementById("logicGrid");
     const history = [];
 
-    function cellKey(matrixIndex, rowIndex, colIndex){
-      return `${matrixIndex}-${rowIndex}-${colIndex}`;
+    function addElement(className, col, row, text = "") {
+      const el = document.createElement("div");
+      el.className = className;
+      el.style.gridColumn = col;
+      el.style.gridRow = row;
+      el.textContent = text;
+      grid.appendChild(el);
+      return el;
     }
 
-    function render(){
-      matrices.forEach(([rowTitle, rows, colTitle, cols], matrixIndex) => {
-        const table = document.createElement("table");
-        table.className = "matrix";
-        table.innerHTML = `
-          <caption>${rowTitle} × ${colTitle}</caption>
-          <thead>
-            <tr>
-              <th class="corner">${rowTitle} / ${colTitle}</th>
-              ${cols.map(col => `<th><span>${col}</span></th>`).join("")}
-            </tr>
-          </thead>
-          <tbody>
-            ${rows.map((row, rowIndex) => `
-              <tr>
-                <th>${row}</th>
-                ${cols.map((_, colIndex) =>
-                  `<td class="cell" data-key="${cellKey(matrixIndex,rowIndex,colIndex)}" aria-label="${row} con ${cols[colIndex]}"></td>`
-                ).join("")}
-              </tr>
-            `).join("")}
-          </tbody>
-        `;
-        grid.appendChild(table);
-      });
-    }
+    // Esquina superior izquierda
+    addElement("corner", 1, 1);
 
-    function getState(cell){
-      if(cell.classList.contains("no")) return "no";
-      if(cell.classList.contains("yes")) return "yes";
-      return "blank";
-    }
-
-    function setState(cell, state){
-      cell.classList.remove("no", "yes");
-      cell.textContent = "";
-      if(state === "no"){
-        cell.classList.add("no");
-        cell.textContent = "X";
-      }else if(state === "yes"){
-        cell.classList.add("yes");
-        cell.textContent = "✓";
-      }
-    }
-
-    function nextState(state){
-      if(state === "blank") return "no";
-      if(state === "no") return "yes";
-      return "blank";
-    }
-
-    grid.addEventListener("click", event => {
-      const cell = event.target.closest(".cell");
-      if(!cell) return;
-      const previous = getState(cell);
-      const next = nextState(previous);
-      history.push({key:cell.dataset.key, previous});
-      setState(cell, next);
+    // Encabezados de grupos de columnas
+    columns.forEach((group, groupIndex) => {
+      const startCol = 2 + groupIndex * 5;
+      const title = addElement("col-group", `${startCol} / span 5`, 1, group.name);
+      title.style.alignSelf = "start";
     });
 
+    // Etiquetas verticales de columnas
+    columns.forEach((group, groupIndex) => {
+      group.items.forEach((item, itemIndex) => {
+        const col = 2 + groupIndex * 5 + itemIndex;
+        const label = addElement("col-label", col, 1, item);
+        if (itemIndex === 0) label.style.borderLeft = "3px solid var(--line)";
+        if (itemIndex === 4) label.style.borderRight = "3px solid var(--line)";
+      });
+    });
+
+    // Filas, etiquetas y celdas
+    categories.forEach((rowGroup, rowGroupIndex) => {
+      rowGroup.items.forEach((rowItem, itemIndex) => {
+        const row = 2 + rowGroupIndex * 5 + itemIndex;
+
+        const label = addElement(
+          "row-label" + (itemIndex === 0 ? " group-start" : ""),
+          1,
+          row
+        );
+
+        if (itemIndex === 0) {
+          const groupName = document.createElement("span");
+          groupName.className = "group-name";
+          groupName.textContent = rowGroup.name;
+          label.appendChild(groupName);
+        }
+
+        const itemText = document.createElement("span");
+        itemText.textContent = rowItem;
+        label.appendChild(itemText);
+
+        columns.forEach((colGroup, colGroupIndex) => {
+          colGroup.items.forEach((_, colItemIndex) => {
+            const col = 2 + colGroupIndex * 5 + colItemIndex;
+            const isActive = activeBlocks[rowGroupIndex].includes(colGroupIndex);
+
+            if (!isActive) {
+              addElement("blocked", col, row);
+              return;
+            }
+
+            const classes = ["cell"];
+            if (itemIndex === 0) classes.push("top");
+            if (colItemIndex === 0) classes.push("left");
+            if (colItemIndex === 4) classes.push("group-right");
+            if (itemIndex === 4) classes.push("group-bottom");
+
+            const cell = addElement(classes.join(" "), col, row);
+            cell.dataset.state = "empty";
+
+            cell.addEventListener("click", () => {
+              const previous = cell.dataset.state;
+              const next = previous === "filled" ? "empty" : "filled";
+              history.push({ cell, previous });
+              setState(cell, next);
+            });
+
+            cell.addEventListener("contextmenu", (event) => {
+              event.preventDefault();
+              const previous = cell.dataset.state;
+              const next = previous === "cross" ? "empty" : "cross";
+              history.push({ cell, previous });
+              setState(cell, next);
+            });
+          });
+        });
+      });
+    });
+
+    function setState(cell, state) {
+      cell.dataset.state = state;
+      cell.classList.toggle("filled", state === "filled");
+      cell.classList.toggle("cross", state === "cross");
+    }
+
     document.getElementById("undoBtn").addEventListener("click", () => {
-      const last = history.pop();
-      if(!last) return;
-      const cell = document.querySelector(`[data-key="${last.key}"]`);
-      if(cell) setState(cell, last.previous);
+      const action = history.pop();
+      if (action) setState(action.cell, action.previous);
     });
 
     document.getElementById("clearBtn").addEventListener("click", () => {
-      const cells = [...document.querySelectorAll(".cell")];
-      const snapshot = cells.map(cell => ({
-        key:cell.dataset.key,
-        previous:getState(cell)
-      })).filter(item => item.previous !== "blank");
-
-      if(snapshot.length === 0) return;
-
-      history.push({
-        key:"__snapshot__",
-        previous:snapshot
-      });
-
-      cells.forEach(cell => setState(cell, "blank"));
+      document.querySelectorAll(".cell").forEach(cell => setState(cell, "empty"));
+      history.length = 0;
     });
-
-    const originalUndo = document.getElementById("undoBtn").onclick;
-    document.getElementById("undoBtn").addEventListener("click", function snapshotUndoFix(event){
-      const last = history[history.length - 1];
-      if(!last || last.key !== "__snapshot__") return;
-      event.stopImmediatePropagation();
-      history.pop();
-      last.previous.forEach(item => {
-        const cell = document.querySelector(`[data-key="${item.key}"]`);
-        if(cell) setState(cell, item.previous);
-      });
-    }, true);
-
-    render();
   </script>
 </body>
 </html>
