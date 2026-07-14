@@ -205,6 +205,37 @@
       outline-offset: -3px;
     }
 
+
+    .clues {
+      width: min(100%, 900px);
+      margin: 26px 0 0;
+      padding: 22px 24px;
+      background: var(--paper);
+      border: 1.5px solid var(--ink);
+      border-radius: 12px;
+      box-shadow: 4px 4px 0 var(--ink);
+    }
+
+    .clues h2 {
+      margin: 0 0 14px;
+      font-size: 1.35rem;
+    }
+
+    .clues ol {
+      margin: 0;
+      padding-left: 1.6rem;
+    }
+
+    .clues li {
+      margin: 0 0 10px;
+      padding-left: 6px;
+      line-height: 1.5;
+    }
+
+    .clues li:last-child {
+      margin-bottom: 0;
+    }
+
     @media (max-width: 760px) {
       :root {
         --cell-size: 36px;
@@ -257,6 +288,21 @@
     <div class="scroll-area">
       <div id="logicGrid" class="logic-grid" aria-label="Grilla para resolver el puzzle"></div>
     </div>
+
+    <section class="clues" aria-labelledby="cluesTitle">
+      <h2 id="cluesTitle">Pistas</h2>
+      <ol>
+        <li>La banda de <strong>electrónica</strong> se formó después que <strong>Ruido Blanco</strong>.</li>
+        <li><strong>Las Luciérnagas</strong>, que tiene más de 6 integrantes, no toca <strong>rock</strong>.</li>
+        <li><strong>Medianoche</strong> se formó hace 7 años y no toca ni <strong>pop</strong> ni <strong>jazz</strong>.</li>
+        <li>La banda más numerosa no es <strong>Los Cometas</strong>. Esta banda toca <strong>electrónica</strong>.</li>
+        <li>La banda de <strong>jazz</strong> lleva tocando junta un año más que <strong>Saturno</strong>.</li>
+        <li>Ni la banda que se formó hace 3 años ni la que tiene 5 integrantes es <strong>Ruido Blanco</strong>.</li>
+        <li><strong>Saturno</strong>, una banda de <strong>punk</strong>, está formada por 6 integrantes.</li>
+        <li>La banda que se formó hace 2 años tiene más integrantes que la banda de <strong>pop</strong>, y la banda de 8 integrantes se formó 5 años antes.</li>
+      </ol>
+    </section>
+
   </main>
 
   <script>
