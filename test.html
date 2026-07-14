@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Puzzle de lógica musical</title>
+
+  <style>
+    :root {
+      --cream: #FEF9EE;
+      --paper: #FFFDF8;
+      --peach: #FEE9C5;
+      --accent: #F7875C;
+      --ink: #2B1C13;
+      --line: #5E4A3E;
+      --muted: #8C786A;
+      --cell-size: 42px;
+      --label-width: 150px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 32px 18px 50px;
+      background: var(--cream);
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    .page {
+      width: max-content;
+      min-width: min(100%, 760px);
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.7rem, 4vw, 2.4rem);
+      font-weight: 700;
+    }
+
+    .instructions {
+      margin: 0 0 22px;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      border: 1.5px solid var(--ink);
+      border-radius: 8px;
+      padding: 9px 15px;
+      background: var(--paper);
+      color: var(--ink);
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 2px 2px 0 var(--ink);
+    }
+
+    button:hover {
+      background: var(--peach);
+    }
+
+    button:active {
+      transform: translate(2px, 2px);
+      box-shadow: none;
+    }
+
+    .scroll-area {
+      overflow-x: auto;
+      padding: 8px 8px 22px 2px;
+    }
+
+    .logic-grid {
+      display: grid;
+      grid-template-columns: var(--label-width) repeat(15, var(--cell-size));
+      grid-template-rows:
+        118px
+        repeat(5, var(--cell-size))
+        repeat(5, var(--cell-size))
+        repeat(5, var(--cell-size));
+      width: calc(var(--label-width) + 15 * var(--cell-size));
+      background: transparent;
+      user-select: none;
+    }
+
+    .corner-title,
+    .row-label,
+    .category-label,
+    .column-label,
+    .group-title {
+      display: flex;
+      align-items: center;
+    }
+
+    .corner-title {
+      grid-column: 1;
+      grid-row: 1;
+      align-items: flex-end;
+      padding: 0 14px 12px 0;
+      font-size: 1.15rem;
+      font-weight: 700;
+      font-style: italic;
+    }
+
+    .group-title {
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 5px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      font-style: italic;
+      border-left: 2px solid var(--line);
+    }
+
+    .column-label {
+      justify-content: flex-end;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      padding: 7px 0;
+      font-size: 0.91rem;
+      font-weight: 700;
+      border-left: 1px solid transparent;
+    }
+
+    .row-label {
+      justify-content: flex-end;
+      padding-right: 14px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .category-label {
+      justify-content: flex-start;
+      align-items: flex-start;
+      padding-top: 10px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      font-style: italic;
+      border-top: 2px solid var(--line);
+    }
+
+    .cell {
+      width: var(--cell-size);
+      height: var(--cell-size);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--paper);
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      font-family: Arial, sans-serif;
+      font-size: 25px;
+      font-weight: 700;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .cell.first-row {
+      border-top: 2px solid var(--line);
+    }
+
+    .cell.first-col {
+      border-left: 2px solid var(--line);
+    }
+
+    .cell.group-end {
+      border-right-width: 2px;
+    }
+
+    .cell.block-end {
+      border-bottom-width: 2px;
+    }
+
+    .cell.marked {
+      background: var(--peach);
+    }
+
+    .cell.marked::after {
+      content: "●";
+      color: var(--accent);
+      font-size: 22px;
+    }
+
+    .cell.excluded::after {
+      content: "×";
+      color: var(--ink);
+      font-size: 30px;
+      font-weight: 500;
+    }
+
+    .cell:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: -3px;
+    }
+
+    @media (max-width: 760px) {
+      :root {
+        --cell-size: 36px;
+        --label-width: 135px;
+      }
+
+      body {
+        padding-inline: 12px;
+      }
+
+      .column-label {
+        font-size: 0.82rem;
+      }
+
+      .row-label {
+        font-size: 0.86rem;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+
+      .toolbar,
+      .instructions {
+        display: none;
+      }
+
+      .scroll-area {
+        overflow: visible;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <h1>Puzzle de lógica musical</h1>
+    <p class="instructions">
+      Clic izquierdo: marcar una coincidencia. Clic derecho: colocar una X.
+    </p>
+
+    <div class="toolbar">
+      <button id="undoButton" type="button">Deshacer</button>
+      <button id="clearButton" type="button">Limpiar grilla</button>
+    </div>
+
+    <div class="scroll-area">
+      <div id="logicGrid" class="logic-grid" aria-label="Grilla para resolver el puzzle"></div>
+    </div>
+  </main>
+
+  <script>
+    const bands = [
+      "Los Cometas",
+      "Medianoche",
+      "Ruido Blanco",
+      "Saturno",
+      "Las Luciérnagas"
+    ];
+
+    const members = ["4", "5", "6", "7", "8"];
+    const ages = ["2 años", "3 años", "6 años", "7 años", "9 años"];
+    const genres = ["Rock", "Pop", "Jazz", "Electrónica", "Punk"];
+
+    const grid = document.getElementById("logicGrid");
+    const history = [];
+
+    function addElement(className, text, column, row, columnSpan = 1, rowSpan = 1) {
+      const element = document.createElement("div");
+      element.className = className;
+      element.textContent = text;
+      element.style.gridColumn = `${column} / span ${columnSpan}`;
+      element.style.gridRow = `${row} / span ${rowSpan}`;
+      grid.appendChild(element);
+      return element;
+    }
+
+    function createCell(row, column, options = {}) {
+      const cell = document.createElement("div");
+      cell.className = "cell";
+      cell.tabIndex = 0;
+      cell.dataset.state = "empty";
+      cell.style.gridColumn = column;
+      cell.style.gridRow = row;
+
+      if (options.firstRow) cell.classList.add("first-row");
+      if (options.firstCol) cell.classList.add("first-col");
+      if (options.groupEnd) cell.classList.add("group-end");
+      if (options.blockEnd) cell.classList.add("block-end");
+
+      cell.addEventListener("click", () => setCellState(cell, cell.dataset.state === "marked" ? "empty" : "marked"));
+
+      cell.addEventListener("contextmenu", (event) => {
+        event.preventDefault();
+        setCellState(cell, cell.dataset.state === "excluded" ? "empty" : "excluded");
+      });
+
+      cell.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          setCellState(cell, cell.dataset.state === "marked" ? "empty" : "marked");
+        }
+
+        if (event.key.toLowerCase() === "x") {
+          event.preventDefault();
+          setCellState(cell, cell.dataset.state === "excluded" ? "empty" : "excluded");
+        }
+      });
+
+      grid.appendChild(cell);
+    }
+
+    function setCellState(cell, newState, saveHistory = true) {
+      const previousState = cell.dataset.state;
+      if (previousState === newState) return;
+
+      if (saveHistory) {
+        history.push({ cell, previousState });
+      }
+
+      cell.dataset.state = newState;
+      cell.classList.toggle("marked", newState === "marked");
+      cell.classList.toggle("excluded", newState === "excluded");
+    }
+
+    // Encabezados principales
+    addElement("corner-title", "Banda", 1, 1);
+    addElement("group-title", "Integrantes", 2, 1, 5);
+    addElement("group-title", "Antigüedad", 7, 1, 5);
+    addElement("group-title", "Género musical", 12, 1, 5);
+
+    // Etiquetas verticales superiores
+    [...members, ...ages, ...genres].forEach((label, index) => {
+      const header = addElement("column-label", label, index + 2, 1);
+      header.style.alignSelf = "end";
+      header.style.height = "88px";
+    });
+
+    // Bloque 1: Bandas × Integrantes / Antigüedad / Género
+    bands.forEach((band, rowIndex) => {
+      const gridRow = rowIndex + 2;
+      addElement("row-label", band, 1, gridRow);
+
+      for (let colIndex = 0; colIndex < 15; colIndex++) {
+        createCell(gridRow, colIndex + 2, {
+          firstRow: rowIndex === 0,
+          firstCol: colIndex === 0,
+          groupEnd: colIndex === 4 || colIndex === 9 || colIndex === 14,
+          blockEnd: rowIndex === 4
+        });
+      }
+    });
+
+    // Bloque 2: Géneros × Integrantes / Antigüedad
+    addElement("category-label", "Género musical", 1, 7, 1, 5);
+
+    genres.forEach((genre, rowIndex) => {
+      const gridRow = rowIndex + 7;
+      addElement("row-label", genre, 1, gridRow);
+
+      for (let colIndex = 0; colIndex < 10; colIndex++) {
+        createCell(gridRow, colIndex + 2, {
+          firstRow: rowIndex === 0,
+          firstCol: colIndex === 0,
+          groupEnd: colIndex === 4 || colIndex === 9,
+          blockEnd: rowIndex === 4
+        });
+      }
+    });
+
+    // Bloque 3: Antigüedad × Integrantes
+    addElement("category-label", "Antigüedad", 1, 12, 1, 5);
+
+    ages.forEach((age, rowIndex) => {
+      const gridRow = rowIndex + 12;
+      addElement("row-label", age, 1, gridRow);
+
+      for (let colIndex = 0; colIndex < 5; colIndex++) {
+        createCell(gridRow, colIndex + 2, {
+          firstRow: rowIndex === 0,
+          firstCol: colIndex === 0,
+          groupEnd: colIndex === 4,
+          blockEnd: rowIndex === 4
+        });
+      }
+    });
+
+    document.getElementById("undoButton").addEventListener("click", () => {
+      const lastAction = history.pop();
+      if (!lastAction) return;
+      setCellState(lastAction.cell, lastAction.previousState, false);
+    });
+
+    document.getElementById("clearButton").addEventListener("click", () => {
+      const cells = [...document.querySelectorAll(".cell")];
+      const hasMarks = cells.some(cell => cell.dataset.state !== "empty");
+
+      if (!hasMarks) return;
+      if (!confirm("¿Querés borrar todas las marcas de la grilla?")) return;
+
+      cells.forEach(cell => setCellState(cell, "empty", false));
+      history.length = 0;
+    });
+  </script>
+</body>
+</html>
