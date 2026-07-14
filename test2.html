@@ -1,20 +1,18 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Grupos de reflexión — Puzzle de lógica</title>
+
   <style>
     :root{
       --cream:#FEF9EE;
       --peach:#FEE9C5;
       --accent:#F7875C;
       --ink:#2B1C13;
-      --line:#2B1C13;
-      --cell:38px;
-      --label:170px;
-      --group-header:34px;
-      --item-header:112px;
+      --cell:40px;
+      --label-width:190px;
     }
 
     *{box-sizing:border-box}
@@ -27,56 +25,53 @@
       font-family:Georgia, "Times New Roman", serif;
     }
 
-    .page{
-      width:min(1180px, 100%);
+    main{
+      width:min(1180px,100%);
       margin:0 auto;
     }
 
     h1{
       margin:0 0 14px;
-      font-size:clamp(2rem, 5vw, 3.8rem);
+      font-size:clamp(2.2rem,5vw,4rem);
       line-height:1;
     }
 
     .intro{
       max-width:900px;
       margin:0 0 28px;
-      font-size:1.1rem;
       line-height:1.55;
+      font-size:1.08rem;
     }
 
     .clues{
+      margin-bottom:34px;
+      padding:22px 26px;
       background:#fffaf0;
       border:2px solid var(--ink);
       border-radius:14px;
-      padding:22px 26px;
-      margin-bottom:34px;
       box-shadow:6px 6px 0 var(--peach);
     }
 
     .clues h2{
       margin:0 0 12px;
-      font-size:1.55rem;
+      font-size:1.5rem;
     }
 
     .clues ol{
       margin:0;
-      padding-left:1.4rem;
+      padding-left:1.5rem;
       columns:2;
-      column-gap:44px;
+      column-gap:42px;
     }
 
     .clues li{
       break-inside:avoid;
-      margin:0 0 12px;
-      padding-left:4px;
+      margin-bottom:12px;
       line-height:1.45;
-      font-size:1rem;
     }
 
     .instructions{
-      margin:0 0 18px;
-      font-size:.98rem;
+      margin:0 0 14px;
     }
 
     .toolbar{
@@ -87,12 +82,12 @@
     }
 
     button{
+      padding:9px 16px;
       border:2px solid var(--ink);
+      border-radius:999px;
       background:var(--accent);
       color:var(--ink);
-      border-radius:999px;
-      padding:9px 16px;
-      font:700 0.95rem Georgia, "Times New Roman", serif;
+      font:700 .95rem Georgia, "Times New Roman", serif;
       cursor:pointer;
       box-shadow:3px 3px 0 var(--ink);
     }
@@ -104,297 +99,366 @@
 
     .grid-scroll{
       overflow:auto;
-      padding:8px 8px 18px;
+      padding:10px 8px 22px;
     }
 
-    .logic-grid{
-      display:grid;
-      grid-template-columns: var(--label) repeat(15, var(--cell));
-      grid-template-rows:
-        var(--group-header)
-        var(--item-header)
-        repeat(15, var(--cell));
+    table{
+      border-collapse:collapse;
+      table-layout:fixed;
       width:max-content;
       user-select:none;
-      background:transparent;
     }
 
-    .corner{
-      grid-column:1;
-      grid-row:1 / span 2;
+    col.row-label-col{
+      width:var(--label-width);
     }
 
-    .col-group{
-      display:flex;
-      align-items:center;
-      justify-content:center;
+    col.data-col{
+      width:var(--cell);
+    }
+
+    thead th{
+      padding:0;
+    }
+
+    .blank-head{
+      border:none;
+    }
+
+    .group-title{
+      height:38px;
+      border-bottom:1px solid var(--ink);
+      font-size:1.04rem;
       font-weight:700;
-      font-size:1.05rem;
-      border-bottom:1px solid var(--line);
+      text-align:center;
     }
 
-    .col-label{
-      display:flex;
-      align-items:flex-end;
-      justify-content:center;
-      padding-bottom:8px;
+    .group-title.start{
+      border-left:3px solid var(--ink);
+    }
+
+    .group-title.end{
+      border-right:3px solid var(--ink);
+    }
+
+    .vertical-label{
+      width:var(--cell);
+      height:112px;
+      border-bottom:3px solid var(--ink);
+      vertical-align:bottom;
+      text-align:center;
+    }
+
+    .vertical-label.start{
+      border-left:3px solid var(--ink);
+    }
+
+    .vertical-label.end{
+      border-right:3px solid var(--ink);
+    }
+
+    .vertical-label span{
+      display:inline-block;
       writing-mode:vertical-rl;
       transform:rotate(180deg);
+      padding-bottom:8px;
       font-size:.88rem;
-      font-weight:700;
       line-height:1;
-      border-bottom:3px solid var(--line);
+      white-space:nowrap;
     }
 
     .row-label{
-      display:flex;
-      align-items:center;
-      justify-content:flex-end;
-      padding-right:12px;
-      font-weight:700;
+      width:var(--label-width);
+      min-width:var(--label-width);
+      height:var(--cell);
+      padding:0 12px 0 0;
+      border:none;
+      text-align:right;
+      vertical-align:middle;
       font-size:.98rem;
+      font-weight:700;
       white-space:nowrap;
     }
 
     .row-label.group-start{
-      border-top:3px solid var(--line);
+      border-top:3px solid var(--ink);
     }
 
-    .row-label .group-name{
+    .row-label-inner{
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      gap:10px;
+      width:100%;
+    }
+
+    .row-group-name{
       margin-right:auto;
       font-size:1.08rem;
       font-style:italic;
     }
 
-    .cell{
+    td.cell{
       width:var(--cell);
+      min-width:var(--cell);
       height:var(--cell);
-      border-right:1px solid var(--line);
-      border-bottom:1px solid var(--line);
+      padding:0;
+      border-right:1px solid var(--ink);
+      border-bottom:1px solid var(--ink);
       background:#fffdf8;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-family:Arial, sans-serif;
-      font-size:1.35rem;
+      text-align:center;
+      vertical-align:middle;
+      font-family:Arial,sans-serif;
+      font-size:1.45rem;
       font-weight:700;
       cursor:pointer;
     }
 
-    .cell.top{
-      border-top:3px solid var(--line);
+    td.cell.top{
+      border-top:3px solid var(--ink);
     }
 
-    .cell.left{
-      border-left:3px solid var(--line);
+    td.cell.left{
+      border-left:3px solid var(--ink);
     }
 
-    .cell.group-right{
-      border-right:3px solid var(--line);
+    td.cell.right{
+      border-right:3px solid var(--ink);
     }
 
-    .cell.group-bottom{
-      border-bottom:3px solid var(--line);
+    td.cell.bottom{
+      border-bottom:3px solid var(--ink);
     }
 
-    .cell.filled{
+    td.cell.filled{
       background:var(--accent);
     }
 
-    .cell.cross::before{
+    td.cell.cross::after{
       content:"×";
-      font-size:1.55rem;
-      line-height:1;
     }
 
-    .blocked{
-      background:transparent;
+    td.empty-space{
+      width:var(--cell);
+      min-width:var(--cell);
+      height:var(--cell);
+      padding:0;
       border:none;
-      pointer-events:none;
+      background:transparent;
     }
 
-    @media (max-width:760px){
+    @media(max-width:760px){
       :root{
         --cell:34px;
-        --label:145px;
-        --item-header:104px;
+        --label-width:155px;
       }
 
-      body{padding:22px 10px 40px}
-      .clues ol{columns:1}
-      .clues{padding:18px}
+      body{
+        padding:22px 10px 40px;
+      }
+
+      .clues{
+        padding:18px;
+      }
+
+      .clues ol{
+        columns:1;
+      }
+
+      .vertical-label{
+        height:104px;
+      }
+
+      .row-label{
+        font-size:.9rem;
+      }
+
+      .row-group-name{
+        font-size:1rem;
+      }
     }
   </style>
 </head>
+
 <body>
-  <main class="page">
-    <h1>Grupos de reflexión</h1>
+<main>
+  <h1>Grupos de reflexión</h1>
 
-    <p class="intro">
-      En momentos de crisis es bueno poder compartir los problemas y pedir ayuda.
-      Descubrí qué tema trata cada psicólogo, hace cuánto se formó cada grupo y
-      cuántas personas lo integran.
-    </p>
+  <p class="intro">
+    Descubrí qué tema trata cada psicólogo, hace cuánto se formó cada grupo
+    y cuántas personas lo integran.
+  </p>
 
-    <section class="clues">
-      <h2>Pistas</h2>
-      <ol>
-        <li>Los que se reúnen para tratar los problemas que tienen con sus padres formaron el grupo después que los que asisten al consultorio del Lic. French.</li>
-        <li>El grupo del Lic. Torres, que tiene más de 6 integrantes, no trata el tema del divorcio.</li>
-        <li>El Lic. Collado formó un grupo hace 7 meses y en él no tratan ni de fobias ni de juego.</li>
-        <li>El grupo más numeroso no trabaja con el Lic. Ardit. Este profesional se dedica especialmente a problemas de relación con los padres.</li>
-        <li>Los que reflexionan acerca del juego llevan trabajando juntos un mes más que los que acompaña el Lic. Moldes.</li>
-        <li>Ni el grupo que se formó hace 3 meses ni el otro que tiene 5 integrantes son coordinados por el Lic. French.</li>
-        <li>El Lic. Moldes, especialista en problemas de timidez, conformó un grupo de 6 personas.</li>
-        <li>Hace 2 meses se formó un grupo más numeroso que el que reflexiona acerca de las fobias, y 5 meses antes empezó a trabajar el grupo de 8 integrantes.</li>
-      </ol>
-    </section>
+  <section class="clues">
+    <h2>Pistas</h2>
+    <ol>
+      <li>Los que se reúnen para tratar los problemas que tienen con sus padres formaron el grupo después que los que asisten al consultorio del Lic. French.</li>
+      <li>El grupo del Lic. Torres, que tiene más de 6 integrantes, no trata el tema del divorcio.</li>
+      <li>El Lic. Collado formó un grupo hace 7 meses y en él no tratan ni de fobias ni de juego.</li>
+      <li>El grupo más numeroso no trabaja con el Lic. Ardit. Este profesional se dedica especialmente a problemas de relación con los padres.</li>
+      <li>Los que reflexionan acerca del juego llevan trabajando juntos un mes más que los que acompaña el Lic. Moldes.</li>
+      <li>Ni el grupo que se formó hace 3 meses ni el otro que tiene 5 integrantes son coordinados por el Lic. French.</li>
+      <li>El Lic. Moldes, especialista en problemas de timidez, conformó un grupo de 6 personas.</li>
+      <li>Hace 2 meses se formó un grupo más numeroso que el que reflexiona acerca de las fobias, y 5 meses antes empezó a trabajar el grupo de 8 integrantes.</li>
+    </ol>
+  </section>
 
-    <p class="instructions">
-      <strong>Clic izquierdo:</strong> rellenar una casilla.
-      <strong>Clic derecho:</strong> marcar una X.
-    </p>
+  <p class="instructions">
+    <strong>Clic izquierdo:</strong> rellenar.
+    <strong>Clic derecho:</strong> colocar una X.
+  </p>
 
-    <div class="toolbar">
-      <button type="button" id="undoBtn">Deshacer</button>
-      <button type="button" id="clearBtn">Limpiar grilla</button>
-    </div>
+  <div class="toolbar">
+    <button id="undoBtn" type="button">Deshacer</button>
+    <button id="clearBtn" type="button">Limpiar grilla</button>
+  </div>
 
-    <div class="grid-scroll">
-      <div class="logic-grid" id="logicGrid" aria-label="Grilla de lógica interactiva"></div>
-    </div>
-  </main>
+  <div class="grid-scroll">
+    <table id="logicGrid" aria-label="Grilla lógica interactiva">
+      <colgroup>
+        <col class="row-label-col">
+        <col class="data-col" span="15">
+      </colgroup>
 
-  <script>
-    const rowGroups = [
-      { name: "Psicólogo", items: ["Ardit", "Collado", "French", "Moldes", "Torres"] },
-      { name: "Problema", items: ["Divorcio", "Fobias", "Juego", "Padres", "Timidez"] },
-      { name: "Hace", items: ["2 meses", "3 meses", "6 meses", "7 meses", "9 meses"] }
-    ];
+      <thead>
+        <tr>
+          <th class="blank-head" rowspan="2"></th>
+          <th class="group-title start end" colspan="5">Integrantes</th>
+          <th class="group-title start end" colspan="5">Hace</th>
+          <th class="group-title start end" colspan="5">Problema</th>
+        </tr>
+        <tr id="columnLabels"></tr>
+      </thead>
 
-    const colGroups = [
-      { name: "Integrantes", items: ["4", "5", "6", "7", "8"] },
-      { name: "Hace", items: ["2 meses", "3 meses", "6 meses", "7 meses", "9 meses"] },
-      { name: "Problema", items: ["Divorcio", "Fobias", "Juego", "Padres", "Timidez"] }
-    ];
+      <tbody id="gridBody"></tbody>
+    </table>
+  </div>
+</main>
 
-    const activeBlocks = {
-      0: [0, 1, 2],
-      1: [0, 1],
-      2: [0]
-    };
+<script>
+  const columnGroups = [
+    ["4", "5", "6", "7", "8"],
+    ["2 meses", "3 meses", "6 meses", "7 meses", "9 meses"],
+    ["Divorcio", "Fobias", "Juego", "Padres", "Timidez"]
+  ];
 
-    const grid = document.getElementById("logicGrid");
-    const history = [];
-
-    function addElement(className, col, row, text = "") {
-      const el = document.createElement("div");
-      el.className = className;
-      el.style.gridColumn = col;
-      el.style.gridRow = row;
-      el.textContent = text;
-      grid.appendChild(el);
-      return el;
+  const rowGroups = [
+    {
+      name: "Psicólogo",
+      items: ["Ardit", "Collado", "French", "Moldes", "Torres"],
+      activeColumnGroups: 3
+    },
+    {
+      name: "Problema",
+      items: ["Divorcio", "Fobias", "Juego", "Padres", "Timidez"],
+      activeColumnGroups: 2
+    },
+    {
+      name: "Hace",
+      items: ["2 meses", "3 meses", "6 meses", "7 meses", "9 meses"],
+      activeColumnGroups: 1
     }
+  ];
 
-    addElement("corner", 1, "1 / span 2");
+  const columnLabels = document.getElementById("columnLabels");
+  const gridBody = document.getElementById("gridBody");
+  const history = [];
 
-    colGroups.forEach((group, groupIndex) => {
-      const startCol = 2 + groupIndex * 5;
+  columnGroups.forEach(group => {
+    group.forEach((label, index) => {
+      const th = document.createElement("th");
+      th.className =
+        "vertical-label" +
+        (index === 0 ? " start" : "") +
+        (index === 4 ? " end" : "");
 
-      const groupTitle = addElement(
-        "col-group",
-        `${startCol} / span 5`,
-        1,
-        group.name
-      );
-
-      groupTitle.style.borderLeft = "3px solid var(--line)";
-      groupTitle.style.borderRight = "3px solid var(--line)";
-
-      group.items.forEach((item, itemIndex) => {
-        const col = startCol + itemIndex;
-        const label = addElement("col-label", col, 2, item);
-
-        if (itemIndex === 0) label.style.borderLeft = "3px solid var(--line)";
-        if (itemIndex === 4) label.style.borderRight = "3px solid var(--line)";
-      });
+      const span = document.createElement("span");
+      span.textContent = label;
+      th.appendChild(span);
+      columnLabels.appendChild(th);
     });
+  });
 
-    rowGroups.forEach((rowGroup, rowGroupIndex) => {
-      rowGroup.items.forEach((rowItem, itemIndex) => {
-        const row = 3 + rowGroupIndex * 5 + itemIndex;
+  rowGroups.forEach(group => {
+    group.items.forEach((item, rowIndex) => {
+      const tr = document.createElement("tr");
 
-        const label = addElement(
-          "row-label" + (itemIndex === 0 ? " group-start" : ""),
-          1,
-          row
-        );
+      const labelCell = document.createElement("th");
+      labelCell.className = "row-label" + (rowIndex === 0 ? " group-start" : "");
 
-        if (itemIndex === 0) {
-          const groupName = document.createElement("span");
-          groupName.className = "group-name";
-          groupName.textContent = rowGroup.name;
-          label.appendChild(groupName);
-        }
+      const labelInner = document.createElement("div");
+      labelInner.className = "row-label-inner";
 
-        const itemText = document.createElement("span");
-        itemText.textContent = rowItem;
-        label.appendChild(itemText);
+      if (rowIndex === 0) {
+        const groupName = document.createElement("span");
+        groupName.className = "row-group-name";
+        groupName.textContent = group.name;
+        labelInner.appendChild(groupName);
+      }
 
-        colGroups.forEach((colGroup, colGroupIndex) => {
-          colGroup.items.forEach((_, colItemIndex) => {
-            const col = 2 + colGroupIndex * 5 + colItemIndex;
-            const isActive = activeBlocks[rowGroupIndex].includes(colGroupIndex);
+      const itemName = document.createElement("span");
+      itemName.textContent = item;
+      labelInner.appendChild(itemName);
 
-            if (!isActive) {
-              addElement("blocked", col, row);
-              return;
-            }
+      labelCell.appendChild(labelInner);
+      tr.appendChild(labelCell);
 
-            const classes = ["cell"];
-            if (itemIndex === 0) classes.push("top");
-            if (colItemIndex === 0) classes.push("left");
-            if (colItemIndex === 4) classes.push("group-right");
-            if (itemIndex === 4) classes.push("group-bottom");
+      for (let columnGroupIndex = 0; columnGroupIndex < 3; columnGroupIndex++) {
+        for (let columnIndex = 0; columnIndex < 5; columnIndex++) {
+          if (columnGroupIndex < group.activeColumnGroups) {
+            const td = document.createElement("td");
+            td.className =
+              "cell" +
+              (rowIndex === 0 ? " top" : "") +
+              (rowIndex === 4 ? " bottom" : "") +
+              (columnIndex === 0 ? " left" : "") +
+              (columnIndex === 4 ? " right" : "");
 
-            const cell = addElement(classes.join(" "), col, row);
-            cell.dataset.state = "empty";
+            td.dataset.state = "empty";
 
-            cell.addEventListener("click", () => {
-              const previous = cell.dataset.state;
+            td.addEventListener("click", () => {
+              const previous = td.dataset.state;
               const next = previous === "filled" ? "empty" : "filled";
-              history.push({ cell, previous });
-              setState(cell, next);
+              history.push({cell: td, previous});
+              setState(td, next);
             });
 
-            cell.addEventListener("contextmenu", (event) => {
+            td.addEventListener("contextmenu", event => {
               event.preventDefault();
-              const previous = cell.dataset.state;
+              const previous = td.dataset.state;
               const next = previous === "cross" ? "empty" : "cross";
-              history.push({ cell, previous });
-              setState(cell, next);
+              history.push({cell: td, previous});
+              setState(td, next);
             });
-          });
-        });
-      });
-    });
 
-    function setState(cell, state) {
-      cell.dataset.state = state;
-      cell.classList.toggle("filled", state === "filled");
-      cell.classList.toggle("cross", state === "cross");
-    }
+            tr.appendChild(td);
+          } else {
+            const td = document.createElement("td");
+            td.className = "empty-space";
+            tr.appendChild(td);
+          }
+        }
+      }
 
-    document.getElementById("undoBtn").addEventListener("click", () => {
-      const action = history.pop();
-      if (action) setState(action.cell, action.previous);
+      gridBody.appendChild(tr);
     });
+  });
 
-    document.getElementById("clearBtn").addEventListener("click", () => {
-      document.querySelectorAll(".cell").forEach(cell => setState(cell, "empty"));
-      history.length = 0;
-    });
-  </script>
+  function setState(cell, state){
+    cell.dataset.state = state;
+    cell.classList.toggle("filled", state === "filled");
+    cell.classList.toggle("cross", state === "cross");
+  }
+
+  document.getElementById("undoBtn").addEventListener("click", () => {
+    const action = history.pop();
+    if (action) setState(action.cell, action.previous);
+  });
+
+  document.getElementById("clearBtn").addEventListener("click", () => {
+    document.querySelectorAll("td.cell").forEach(cell => setState(cell, "empty"));
+    history.length = 0;
+  });
+</script>
 </body>
 </html>
