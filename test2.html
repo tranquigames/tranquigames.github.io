@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bandas de música — Puzzle de lógica</title>
+  <style>
+    :root{
+      --cream:#FEF9EE;
+      --peach:#FEE9C5;
+      --accent:#F7875C;
+      --ink:#2B1C13;
+      --paper:#fffdf8;
+      --line:#7c675b;
+      --soft:#eadfce;
+      --yes:#d9efd8;
+      --no:#f4d5cf;
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      background:var(--cream);
+      color:var(--ink);
+      font-family:Georgia, "Times New Roman", serif;
+      line-height:1.5;
+    }
+
+    .page{
+      width:min(1180px, 94vw);
+      margin:32px auto 60px;
+    }
+
+    .hero{
+      background:var(--peach);
+      border:2px solid var(--ink);
+      border-radius:18px;
+      padding:28px;
+      box-shadow:6px 6px 0 rgba(43,28,19,.14);
+      margin-bottom:24px;
+    }
+
+    h1{
+      margin:0 0 8px;
+      font-size:clamp(2rem,4vw,3.4rem);
+      line-height:1.05;
+    }
+
+    .intro{
+      margin:0;
+      font-size:1.08rem;
+      max-width:850px;
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns:minmax(0, 1fr) minmax(320px, 430px);
+      gap:24px;
+      align-items:start;
+    }
+
+    .card{
+      background:var(--paper);
+      border:2px solid var(--ink);
+      border-radius:16px;
+      padding:20px;
+      box-shadow:5px 5px 0 rgba(43,28,19,.10);
+    }
+
+    h2{
+      margin:0 0 14px;
+      font-size:1.45rem;
+    }
+
+    .instructions{
+      margin:0 0 14px;
+      font-size:.98rem;
+    }
+
+    .clues{
+      margin:0;
+      padding-left:1.4rem;
+    }
+
+    .clues li{
+      margin:0 0 12px;
+      padding-left:.25rem;
+    }
+
+    .toolbar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-bottom:14px;
+    }
+
+    button{
+      appearance:none;
+      border:2px solid var(--ink);
+      background:var(--paper);
+      color:var(--ink);
+      border-radius:999px;
+      padding:9px 15px;
+      font:inherit;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:2px 2px 0 rgba(43,28,19,.18);
+    }
+
+    button:hover{background:var(--peach)}
+    button:active{
+      transform:translate(1px,1px);
+      box-shadow:1px 1px 0 rgba(43,28,19,.18);
+    }
+
+    .grid-wrap{
+      overflow:auto;
+      padding-bottom:8px;
+    }
+
+    .logic-grid{
+      display:grid;
+      gap:18px;
+      min-width:720px;
+    }
+
+    .matrix{
+      border-collapse:collapse;
+      background:white;
+    }
+
+    .matrix caption{
+      text-align:left;
+      font-weight:700;
+      margin-bottom:7px;
+      font-size:1.05rem;
+    }
+
+    .matrix th,
+    .matrix td{
+      border:1px solid var(--line);
+    }
+
+    .matrix thead th{
+      height:108px;
+      min-width:45px;
+      padding:0;
+      vertical-align:bottom;
+      background:#faf4e9;
+    }
+
+    .matrix thead th.corner{
+      min-width:140px;
+      padding:8px;
+      height:auto;
+      vertical-align:middle;
+      text-align:left;
+    }
+
+    .matrix thead th span{
+      display:inline-block;
+      writing-mode:vertical-rl;
+      transform:rotate(180deg);
+      padding:8px 4px;
+      white-space:nowrap;
+      font-size:.92rem;
+    }
+
+    .matrix tbody th{
+      width:140px;
+      min-width:140px;
+      text-align:right;
+      padding:6px 10px;
+      background:#faf4e9;
+      font-size:.94rem;
+      white-space:nowrap;
+    }
+
+    .cell{
+      width:45px;
+      height:45px;
+      padding:0;
+      text-align:center;
+      vertical-align:middle;
+      cursor:pointer;
+      user-select:none;
+      font-family:Arial, sans-serif;
+      font-weight:800;
+      font-size:1.25rem;
+      transition:background .12s ease;
+    }
+
+    .cell:hover{background:#fff4db}
+    .cell.no{
+      background:var(--no);
+      color:#9d2f20;
+    }
+    .cell.yes{
+      background:var(--yes);
+      color:#236322;
+    }
+
+    .legend{
+      display:flex;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-top:10px;
+      font-size:.92rem;
+    }
+
+    .legend span{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+    }
+
+    .swatch{
+      width:22px;
+      height:22px;
+      border:1px solid var(--line);
+      display:inline-grid;
+      place-items:center;
+      font-family:Arial,sans-serif;
+      font-weight:bold;
+    }
+
+    .category-list{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+      margin-top:16px;
+    }
+
+    .category{
+      border:1px solid var(--soft);
+      border-radius:12px;
+      padding:12px;
+      background:#fffaf1;
+    }
+
+    .category strong{
+      display:block;
+      margin-bottom:5px;
+    }
+
+    .category p{
+      margin:0;
+      font-size:.94rem;
+    }
+
+    @media (max-width:900px){
+      .layout{grid-template-columns:1fr}
+      .clue-card{order:-1}
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <h1>Bandas de música</h1>
+      <p class="intro">
+        Cinco bandas tienen distintos géneros musicales, antigüedades y cantidades de integrantes.
+        Usá las pistas para descubrir qué combinación corresponde a cada una.
+      </p>
+    </section>
+
+    <div class="layout">
+      <section class="card">
+        <h2>Grilla de deducción</h2>
+        <p class="instructions">
+          Hacé clic en una casilla para marcar una <strong>X</strong>; hacé clic otra vez para marcar una
+          <strong>✓</strong>; un tercer clic la deja vacía.
+        </p>
+
+        <div class="toolbar">
+          <button type="button" id="undoBtn">Deshacer</button>
+          <button type="button" id="clearBtn">Limpiar grilla</button>
+        </div>
+
+        <div class="grid-wrap">
+          <div id="logicGrid" class="logic-grid"></div>
+        </div>
+
+        <div class="legend">
+          <span><span class="swatch">X</span> No corresponde</span>
+          <span><span class="swatch">✓</span> Corresponde</span>
+        </div>
+
+        <div class="category-list">
+          <div class="category">
+            <strong>Bandas</strong>
+            <p>Los Cometas, Medianoche, Ruido Blanco, Saturno, Las Luciérnagas</p>
+          </div>
+          <div class="category">
+            <strong>Géneros</strong>
+            <p>Rock, Pop, Jazz, Electrónica, Punk</p>
+          </div>
+          <div class="category">
+            <strong>Antigüedad</strong>
+            <p>2, 3, 6, 7 y 9 años</p>
+          </div>
+          <div class="category">
+            <strong>Integrantes</strong>
+            <p>4, 5, 6, 7 y 8 integrantes</p>
+          </div>
+        </div>
+      </section>
+
+      <aside class="card clue-card">
+        <h2>Pistas</h2>
+        <ol class="clues">
+          <li>
+            La banda de <strong>electrónica</strong> se formó después que
+            <strong>Ruido Blanco</strong>.
+          </li>
+          <li>
+            <strong>Las Luciérnagas</strong>, que tiene más de 6 integrantes,
+            no toca <strong>rock</strong>.
+          </li>
+          <li>
+            <strong>Medianoche</strong> se formó hace 7 años y no toca ni
+            <strong>pop</strong> ni <strong>jazz</strong>.
+          </li>
+          <li>
+            La banda más numerosa no es <strong>Los Cometas</strong>.
+            <strong>Los Cometas</strong> toca <strong>electrónica</strong>.
+          </li>
+          <li>
+            La banda de <strong>jazz</strong> lleva tocando junta un año más que
+            <strong>Saturno</strong>.
+          </li>
+          <li>
+            <strong>Ruido Blanco</strong> no se formó hace 3 años ni tiene
+            5 integrantes.
+          </li>
+          <li>
+            <strong>Saturno</strong> toca <strong>punk</strong> y tiene
+            6 integrantes.
+          </li>
+          <li>
+            La banda que se formó hace 2 años tiene más integrantes que la banda de
+            <strong>pop</strong>. La banda de 8 integrantes se formó cinco años antes.
+          </li>
+        </ol>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    const categories = {
+      bandas: ["Los Cometas", "Medianoche", "Ruido Blanco", "Saturno", "Las Luciérnagas"],
+      generos: ["Rock", "Pop", "Jazz", "Electrónica", "Punk"],
+      antiguedad: ["2 años", "3 años", "6 años", "7 años", "9 años"],
+      integrantes: ["4", "5", "6", "7", "8"]
+    };
+
+    const matrices = [
+      ["Bandas", categories.bandas, "Integrantes", categories.integrantes],
+      ["Bandas", categories.bandas, "Antigüedad", categories.antiguedad],
+      ["Bandas", categories.bandas, "Género musical", categories.generos],
+      ["Género musical", categories.generos, "Integrantes", categories.integrantes],
+      ["Género musical", categories.generos, "Antigüedad", categories.antiguedad],
+      ["Antigüedad", categories.antiguedad, "Integrantes", categories.integrantes]
+    ];
+
+    const grid = document.getElementById("logicGrid");
+    const history = [];
+
+    function cellKey(matrixIndex, rowIndex, colIndex){
+      return `${matrixIndex}-${rowIndex}-${colIndex}`;
+    }
+
+    function render(){
+      matrices.forEach(([rowTitle, rows, colTitle, cols], matrixIndex) => {
+        const table = document.createElement("table");
+        table.className = "matrix";
+        table.innerHTML = `
+          <caption>${rowTitle} × ${colTitle}</caption>
+          <thead>
+            <tr>
+              <th class="corner">${rowTitle} / ${colTitle}</th>
+              ${cols.map(col => `<th><span>${col}</span></th>`).join("")}
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map((row, rowIndex) => `
+              <tr>
+                <th>${row}</th>
+                ${cols.map((_, colIndex) =>
+                  `<td class="cell" data-key="${cellKey(matrixIndex,rowIndex,colIndex)}" aria-label="${row} con ${cols[colIndex]}"></td>`
+                ).join("")}
+              </tr>
+            `).join("")}
+          </tbody>
+        `;
+        grid.appendChild(table);
+      });
+    }
+
+    function getState(cell){
+      if(cell.classList.contains("no")) return "no";
+      if(cell.classList.contains("yes")) return "yes";
+      return "blank";
+    }
+
+    function setState(cell, state){
+      cell.classList.remove("no", "yes");
+      cell.textContent = "";
+      if(state === "no"){
+        cell.classList.add("no");
+        cell.textContent = "X";
+      }else if(state === "yes"){
+        cell.classList.add("yes");
+        cell.textContent = "✓";
+      }
+    }
+
+    function nextState(state){
+      if(state === "blank") return "no";
+      if(state === "no") return "yes";
+      return "blank";
+    }
+
+    grid.addEventListener("click", event => {
+      const cell = event.target.closest(".cell");
+      if(!cell) return;
+      const previous = getState(cell);
+      const next = nextState(previous);
+      history.push({key:cell.dataset.key, previous});
+      setState(cell, next);
+    });
+
+    document.getElementById("undoBtn").addEventListener("click", () => {
+      const last = history.pop();
+      if(!last) return;
+      const cell = document.querySelector(`[data-key="${last.key}"]`);
+      if(cell) setState(cell, last.previous);
+    });
+
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      const cells = [...document.querySelectorAll(".cell")];
+      const snapshot = cells.map(cell => ({
+        key:cell.dataset.key,
+        previous:getState(cell)
+      })).filter(item => item.previous !== "blank");
+
+      if(snapshot.length === 0) return;
+
+      history.push({
+        key:"__snapshot__",
+        previous:snapshot
+      });
+
+      cells.forEach(cell => setState(cell, "blank"));
+    });
+
+    const originalUndo = document.getElementById("undoBtn").onclick;
+    document.getElementById("undoBtn").addEventListener("click", function snapshotUndoFix(event){
+      const last = history[history.length - 1];
+      if(!last || last.key !== "__snapshot__") return;
+      event.stopImmediatePropagation();
+      history.pop();
+      last.previous.forEach(item => {
+        const cell = document.querySelector(`[data-key="${item.key}"]`);
+        if(cell) setState(cell, item.previous);
+      });
+    }, true);
+
+    render();
+  </script>
+</body>
+</html>
