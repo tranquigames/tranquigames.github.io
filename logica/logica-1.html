@@ -547,89 +547,201 @@
     }
 
   
-    /* Ajuste visual de la grilla inspirado en la referencia */
+    /* Grilla definitiva: medidas exactas y una sola fuente de bordes */
     .logic-table {
-      border-collapse: collapse;
+      width: 790px;
+      border-collapse: separate;
       border-spacing: 0;
+      table-layout: fixed;
+    }
+
+    .logic-table col.row-heading { width: 175px; }
+    .logic-table col.value-column { width: 41px; }
+
+    .logic-table th,
+    .logic-table td {
+      padding: 0;
+      border: 0;
+      box-sizing: border-box;
+    }
+
+    .logic-table thead tr:first-child { height: 46px; }
+    .logic-table thead tr:nth-child(2) { height: 112px; }
+    .logic-table tbody tr { height: 41px; }
+
+    .logic-table .empty-corner {
+      width: 175px;
+      background: transparent;
     }
 
     .logic-table .group-heading {
-      border-left-color: var(--accent);
-      border-right-color: var(--accent);
-      border-bottom-color: var(--grid-light);
+      height: 46px;
+      border-left: 2px solid var(--accent);
+      border-bottom: 1px solid var(--grid-light);
+      background: var(--cream);
+    }
+
+    .logic-table .group-heading:last-child {
+      border-right: 2px solid var(--accent);
     }
 
     .logic-table .column-heading {
-      border-left-color: var(--grid-light);
-      border-bottom-color: var(--accent);
+      width: 41px;
+      height: 112px;
+      border-left: 1px solid var(--grid-light);
+      border-bottom: 2px solid var(--accent);
+      background: var(--cream);
     }
 
     .logic-table .column-heading.group-start {
-      border-left-color: var(--accent);
+      border-left: 2px solid var(--accent);
     }
 
     .logic-table .column-heading.group-end {
-      border-right-color: var(--accent);
+      border-right: 2px solid var(--accent);
     }
 
     .logic-table .row-heading {
-      border-right-color: var(--accent);
-      border-bottom-color: var(--grid-light);
+      width: 175px;
+      height: 41px;
+      padding: 0 13px 0 5px;
+      border-right: 2px solid var(--accent);
+      border-bottom: 1px solid var(--grid-light);
+      background: var(--cream);
+      line-height: 41px;
+      overflow: hidden;
     }
 
     .logic-table .row-heading.section-start {
-      border-top-color: var(--accent);
+      border-top: 2px solid var(--accent);
+    }
+
+    .logic-table .row-heading .category-name {
+      line-height: 41px;
+    }
+
+    .logic-table tbody td:not(.blank-cell) {
+      width: 41px;
+      height: 41px;
+      border-right: 1px solid var(--grid-light);
+      border-bottom: 1px solid var(--grid-light);
+      background: var(--cream);
+    }
+
+    .logic-table tbody td:has(.logic-cell.group-start) {
+      border-left: 2px solid var(--accent);
+    }
+
+    .logic-table tbody td:has(.logic-cell.group-end) {
+      border-right: 2px solid var(--accent);
+    }
+
+    .logic-table tbody tr:has(.logic-cell.section-start) td:not(.blank-cell) {
+      border-top: 2px solid var(--accent);
+    }
+
+    .logic-table tbody tr:nth-child(5) td:not(.blank-cell),
+    .logic-table tbody tr:nth-child(10) td:not(.blank-cell),
+    .logic-table tbody tr:last-child td:not(.blank-cell) {
+      border-bottom: 2px solid var(--accent);
+    }
+
+    .logic-table tbody tr:nth-child(5) .row-heading,
+    .logic-table tbody tr:nth-child(10) .row-heading,
+    .logic-table tbody tr:last-child .row-heading {
+      border-bottom: 2px solid var(--accent);
     }
 
     .logic-cell {
-      border-left-color: var(--grid-light);
-      border-bottom-color: var(--grid-light);
-      transition: background .12s ease;
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: var(--cream);
+      box-sizing: border-box;
     }
 
-    .logic-cell.group-start {
-      border-left-color: var(--accent);
+    .blank-cell {
+      width: 41px;
+      height: 41px;
+      border: 0;
+      background: transparent;
     }
 
-    .logic-cell.group-end {
-      border-right-color: var(--accent);
+    .logic-instructions { margin: 14px auto 0; }
+    .controls { margin-top: 24px; }
+
+    @media (max-width: 700px) {
+      .logic-table { width: 735px; }
+      .logic-table col.row-heading,
+      .logic-table .empty-corner,
+      .logic-table .row-heading { width: 150px; }
+      .logic-table col.value-column,
+      .logic-table .column-heading,
+      .logic-table tbody td:not(.blank-cell),
+      .blank-cell { width: 39px; }
+      .logic-table tbody tr,
+      .logic-table .row-heading,
+      .logic-table tbody td:not(.blank-cell),
+      .blank-cell { height: 39px; }
+      .logic-table .row-heading,
+      .logic-table .row-heading .category-name { line-height: 39px; }
     }
 
-    .logic-cell.section-start {
-      border-top-color: var(--accent);
+  
+
+    /* Unificación final: todas las líneas de la grilla usan el mismo color y grosor */
+    .logic-table {
+      border-collapse: separate !important;
+      border-spacing: 0 !important;
     }
 
-    .logic-table tbody tr:last-child .logic-cell,
-    .logic-table tbody tr:last-child .row-heading {
-      border-bottom-color: var(--accent);
-      border-bottom-width: 3px;
+    .logic-table .group-heading,
+    .logic-table .column-heading,
+    .logic-table .row-heading,
+    .logic-table tbody td:not(.blank-cell) {
+      border: 0 !important;
+      border-right: 1px solid var(--accent) !important;
+      border-bottom: 1px solid var(--accent) !important;
     }
 
-    .logic-table tbody tr:nth-child(5) .logic-cell,
+    .logic-table .group-heading:first-of-type,
+    .logic-table .column-heading.group-start,
+    .logic-table tbody td:has(.logic-cell.group-start) {
+      border-left: 1px solid var(--accent) !important;
+    }
+
+    .logic-table .group-heading:last-child,
+    .logic-table .column-heading.group-end,
+    .logic-table tbody td:has(.logic-cell.group-end) {
+      border-right: 1px solid var(--accent) !important;
+    }
+
+    .logic-table .row-heading.section-start,
+    .logic-table tbody tr:has(.logic-cell.section-start) td:not(.blank-cell) {
+      border-top: 1px solid var(--accent) !important;
+    }
+
+    .logic-table tbody tr:nth-child(5) td:not(.blank-cell),
+    .logic-table tbody tr:nth-child(10) td:not(.blank-cell),
+    .logic-table tbody tr:last-child td:not(.blank-cell),
     .logic-table tbody tr:nth-child(5) .row-heading,
-    .logic-table tbody tr:nth-child(10) .logic-cell,
-    .logic-table tbody tr:nth-child(10) .row-heading {
-      border-bottom-color: var(--accent);
-      border-bottom-width: 3px;
+    .logic-table tbody tr:nth-child(10) .row-heading,
+    .logic-table tbody tr:last-child .row-heading {
+      border-bottom: 1px solid var(--accent) !important;
     }
 
-    .logic-table .group-heading:first-of-type {
-      border-left-color: var(--accent);
+    .logic-cell,
+    .blank-cell,
+    .logic-table .empty-corner {
+      border: 0 !important;
     }
-
-    .logic-table .group-heading:last-of-type {
-      border-right-color: var(--accent);
-    }
-
-    .logic-instructions {
-      margin: 14px auto 0;
-    }
-
-    .controls {
-      margin-top: 24px;
-    }
-
-  </style>
+</style>
 </head>
 <body>
   <main class="page">
