@@ -546,6 +546,89 @@
       .logic-table .row-heading { height: 39px; font-size: .72rem; }
     }
 
+  
+    /* Ajuste visual de la grilla inspirado en la referencia */
+    .logic-table {
+      border-collapse: collapse;
+      border-spacing: 0;
+    }
+
+    .logic-table .group-heading {
+      border-left-color: var(--accent);
+      border-right-color: var(--accent);
+      border-bottom-color: var(--grid-light);
+    }
+
+    .logic-table .column-heading {
+      border-left-color: var(--grid-light);
+      border-bottom-color: var(--accent);
+    }
+
+    .logic-table .column-heading.group-start {
+      border-left-color: var(--accent);
+    }
+
+    .logic-table .column-heading.group-end {
+      border-right-color: var(--accent);
+    }
+
+    .logic-table .row-heading {
+      border-right-color: var(--accent);
+      border-bottom-color: var(--grid-light);
+    }
+
+    .logic-table .row-heading.section-start {
+      border-top-color: var(--accent);
+    }
+
+    .logic-cell {
+      border-left-color: var(--grid-light);
+      border-bottom-color: var(--grid-light);
+      transition: background .12s ease;
+    }
+
+    .logic-cell.group-start {
+      border-left-color: var(--accent);
+    }
+
+    .logic-cell.group-end {
+      border-right-color: var(--accent);
+    }
+
+    .logic-cell.section-start {
+      border-top-color: var(--accent);
+    }
+
+    .logic-table tbody tr:last-child .logic-cell,
+    .logic-table tbody tr:last-child .row-heading {
+      border-bottom-color: var(--accent);
+      border-bottom-width: 3px;
+    }
+
+    .logic-table tbody tr:nth-child(5) .logic-cell,
+    .logic-table tbody tr:nth-child(5) .row-heading,
+    .logic-table tbody tr:nth-child(10) .logic-cell,
+    .logic-table tbody tr:nth-child(10) .row-heading {
+      border-bottom-color: var(--accent);
+      border-bottom-width: 3px;
+    }
+
+    .logic-table .group-heading:first-of-type {
+      border-left-color: var(--accent);
+    }
+
+    .logic-table .group-heading:last-of-type {
+      border-right-color: var(--accent);
+    }
+
+    .logic-instructions {
+      margin: 14px auto 0;
+    }
+
+    .controls {
+      margin-top: 24px;
+    }
+
   </style>
 </head>
 <body>
@@ -574,14 +657,7 @@
           <li>La banda que se formó hace 2 años tiene más integrantes que la banda de pop. La banda de 8 integrantes se formó 5 años antes que ella.</li>
         </ol>
       </section>
-
-      <p class="logic-instructions">
-        Usá las pistas para relacionar correctamente los elementos de cada categoría.
-        Hacé clic o tocá una casilla para marcar una relación correcta y usá el clic derecho para colocar una X.
-        Tu progreso se guarda automáticamente en este dispositivo.
-      </p>
-
-      <div class="logic-wrap">
+<div class="logic-wrap">
         <table class="logic-table" id="logicTable" aria-label="Grilla lógica interactiva">
           <colgroup>
             <col class="row-heading">
@@ -591,6 +667,13 @@
           <tbody id="logicBody"></tbody>
         </table>
       </div>
+
+
+      <p class="logic-instructions">
+        Usá las pistas para relacionar correctamente los elementos de cada categoría.
+        Hacé clic o tocá una casilla para marcar una relación correcta y usá el clic derecho para colocar una X.
+        Tu progreso se guarda automáticamente en este dispositivo.
+      </p>
 
       <div class="controls">
         <button class="action secondary" id="undoButton" type="button" disabled>Deshacer</button>
