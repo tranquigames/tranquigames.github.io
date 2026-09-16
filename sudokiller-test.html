@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sudokiller Level Tester — Nivel 10</title>
+<style>
+  :root{
+    --bg:#e9e2d0;
+    --panel:#f7f1e4;
+    --ink:#2d2a26;
+    --line:#5e574c;
+    --soft:#b9ad97;
+    --cell:clamp(72px, 9vw, 118px);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    min-height:100vh;
+  }
+
+  .app{
+    display:grid;
+    grid-template-columns: minmax(300px, 370px) 1fr;
+    min-height:100vh;
+  }
+
+  .sidebar{
+    background:var(--panel);
+    border-right:2px solid var(--line);
+    padding:18px;
+    overflow:auto;
+  }
+
+  h1{
+    font-size:22px;
+    margin:0 0 4px;
+  }
+
+  .subtitle{
+    font-size:13px;
+    opacity:.72;
+    margin-bottom:16px;
+    line-height:1.35;
+  }
+
+  .characters{
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+  }
+
+  .character{
+    border:2px solid #c8bca5;
+    border-left:9px solid var(--char-color);
+    background:#fffaf0;
+    border-radius:10px;
+    padding:9px 10px;
+    cursor:pointer;
+    transition:.12s ease;
+  }
+  .character:hover{ transform:translateY(-1px); }
+  .character.selected{
+    border-color:var(--char-color);
+    box-shadow:0 0 0 3px color-mix(in srgb, var(--char-color) 20%, transparent);
+  }
+
+  .character-top{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .badge{
+    width:30px;height:30px;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    background:var(--char-color);
+    color:white;
+    font-weight:900;
+    flex:0 0 auto;
+  }
+
+  .name-input{
+    width:100%;
+    border:0;
+    border-bottom:1px dashed #a99c86;
+    background:transparent;
+    color:var(--ink);
+    font-size:15px;
+    font-weight:800;
+    padding:2px 0;
+    outline:none;
+  }
+
+  .clue-input{
+    width:100%;
+    min-height:42px;
+    margin-top:6px;
+    border:0;
+    background:transparent;
+    resize:vertical;
+    color:#4a443c;
+    font:inherit;
+    font-size:12.5px;
+    line-height:1.35;
+    outline:none;
+  }
+
+  .victim .badge{ border:3px solid #332f2a; }
+
+  .tools{
+    margin-top:16px;
+    padding-top:14px;
+    border-top:1px solid #c8bca5;
+  }
+
+  .tool-row{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+    margin-bottom:8px;
+  }
+
+  button{
+    border:2px solid #8f826c;
+    background:#fffaf0;
+    color:#332f2a;
+    border-radius:9px;
+    min-height:42px;
+    font-weight:800;
+    cursor:pointer;
+  }
+  button:hover{ background:#f1eadc; }
+  button.active{
+    background:#332f2a;
+    color:#fff;
+    border-color:#332f2a;
+  }
+
+  .reset{
+    width:100%;
+    border-style:dashed;
+  }
+
+  .help{
+    margin-top:13px;
+    font-size:12px;
+    line-height:1.45;
+    color:#62594d;
+    background:#eee5d3;
+    padding:10px;
+    border-radius:8px;
+  }
+
+  .main{
+    padding:22px;
+    overflow:auto;
+  }
+
+  .topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:14px;
+    margin-bottom:14px;
+    min-width:max-content;
+  }
+
+  .level-title{
+    font-weight:900;
+    font-size:20px;
+  }
+
+  .mode-status{
+    font-size:13px;
+    background:#fffaf0;
+    border:1px solid #ad9f88;
+    padding:7px 10px;
+    border-radius:999px;
+  }
+
+  .board-wrap{
+    display:grid;
+    grid-template-columns: 30px auto;
+    grid-template-rows: 30px auto;
+    width:max-content;
+    user-select:none;
+    -webkit-user-select:none;
+    touch-action:manipulation;
+  }
+
+  .col-labels{
+    grid-column:2;
+    display:grid;
+    grid-template-columns:repeat(6,var(--cell));
+    align-items:center;
+    text-align:center;
+    font-weight:900;
+    font-size:13px;
+  }
+
+  .row-labels{
+    grid-row:2;
+    display:grid;
+    grid-template-rows:repeat(6,var(--cell));
+    align-items:center;
+    text-align:center;
+    font-weight:900;
+    font-size:13px;
+  }
+
+  .board{
+    grid-column:2;
+    grid-row:2;
+    display:grid;
+    grid-template-columns:repeat(6,var(--cell));
+    grid-template-rows:repeat(6,var(--cell));
+    border:4px solid #2f2c28;
+    background:#fff;
+  }
+
+  .cell{
+    width:var(--cell);
+    height:var(--cell);
+    position:relative;
+    background:var(--zone-bg);
+    overflow:hidden;
+    cursor:pointer;
+    border:1px solid rgba(60,55,48,.28);
+  }
+
+  .cell:hover::after{
+    content:"";
+    position:absolute;
+    inset:2px;
+    border:2px dashed rgba(45,42,38,.28);
+    pointer-events:none;
+    z-index:10;
+  }
+
+  .cell.boundary-top{ border-top:4px solid #2f2c28; }
+  .cell.boundary-right{ border-right:4px solid #2f2c28; }
+  .cell.boundary-bottom{ border-bottom:4px solid #2f2c28; }
+  .cell.boundary-left{ border-left:4px solid #2f2c28; }
+
+  .coord{
+    position:absolute;
+    top:4px; left:5px;
+    font-size:10px;
+    font-weight:800;
+    opacity:.48;
+    z-index:5;
+  }
+
+  .zone-name{
+    position:absolute;
+    left:5px; right:5px; bottom:4px;
+    font-size:8.5px;
+    line-height:1.05;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    opacity:.48;
+    text-align:center;
+    z-index:2;
+    pointer-events:none;
+  }
+
+  .object{
+    position:absolute;
+    inset:15px 12px 20px;
+    display:grid;
+    place-items:center;
+    pointer-events:none;
+    z-index:2;
+  }
+
+  .object-label{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    font-size:8px;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:.02em;
+    white-space:nowrap;
+    pointer-events:none;
+    z-index:3;
+    color:#3c352d;
+  }
+
+  /* Objetos cenitales muy simples */
+  .obj-silla{
+    width:30px;height:30px;
+    border:4px solid #71513c;
+    background:#b88962;
+    box-shadow:0 -10px 0 -4px #71513c;
+  }
+  .obj-estanteria{
+    width:58px;height:27px;
+    background:#8e6748;
+    border:4px solid #5e432f;
+    background-image:linear-gradient(90deg, transparent 30%, #5e432f 30% 36%, transparent 36% 64%, #5e432f 64% 70%, transparent 70%);
+  }
+  .obj-caja{
+    width:42px;height:42px;
+    background:#c99a62;
+    border:3px solid #86613c;
+  }
+  .obj-caja::before,.obj-caja::after{
+    content:"";
+    position:absolute;
+  }
+  .obj-vehiculo{
+    width:60px;height:36px;
+    background:#7a95a8;
+    border:4px solid #40515c;
+    border-radius:8px;
+    position:relative;
+  }
+  .obj-vehiculo::before,
+  .obj-vehiculo::after{
+    content:"";
+    position:absolute;
+    width:8px;height:18px;
+    background:#2e3337;
+    top:5px;
+  }
+  .obj-vehiculo::before{left:-9px}
+  .obj-vehiculo::after{right:-9px}
+  .obj-planta{
+    width:34px;height:34px;
+    background:#66895d;
+    border:4px solid #435e3d;
+    border-radius:50% 45% 55% 42%;
+    transform:rotate(14deg);
+  }
+  .obj-mesa{
+    width:62px;height:40px;
+    background:#a57a56;
+    border:4px solid #6e513c;
+  }
+
+  .notes{
+    position:absolute;
+    inset:9px 7px 20px;
+    display:flex;
+    flex-wrap:wrap;
+    align-content:flex-start;
+    justify-content:center;
+    gap:3px;
+    z-index:7;
+    pointer-events:none;
+  }
+
+  .note{
+    width:22px;height:22px;
+    display:grid;
+    place-items:center;
+    border-radius:50%;
+    background:#fffdf8e8;
+    border:2px solid currentColor;
+    color:var(--note-color);
+    font-size:12px;
+    font-weight:950;
+    box-shadow:0 1px 2px #0002;
+  }
+
+  .manual-x,
+  .auto-x{
+    position:absolute;
+    inset:0;
+    display:grid;
+    place-items:center;
+    font-weight:1000;
+    pointer-events:none;
+  }
+  .manual-x{
+    z-index:6;
+    font-size:52px;
+    color:#a13c36;
+    text-shadow:0 2px 0 #fff9;
+  }
+  .auto-x{
+    z-index:4;
+    font-size:34px;
+    color:rgba(53,49,44,.30);
+  }
+
+  .placement{
+    position:absolute;
+    inset:4px;
+    z-index:9;
+    display:grid;
+    place-items:center;
+    border:4px solid var(--placement-color);
+    background:color-mix(in srgb, var(--placement-color) 16%, #fff 84%);
+    border-radius:8px;
+    pointer-events:none;
+    box-shadow:0 2px 6px #0003;
+  }
+
+  .placement-letter{
+    font-weight:1000;
+    font-size:clamp(42px,5vw,72px);
+    line-height:1;
+    color:var(--placement-color);
+    text-shadow:0 2px 0 #fff;
+  }
+
+  .placement-name{
+    position:absolute;
+    bottom:3px;
+    left:3px; right:3px;
+    font-size:8px;
+    font-weight:900;
+    text-align:center;
+    color:#2d2a26;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .legend{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:14px;
+    font-size:11px;
+    width:min(100%, 760px);
+  }
+  .legend span{
+    padding:5px 8px;
+    border:1px solid #b6a98f;
+    border-radius:999px;
+    background:#f7f1e4;
+  }
+
+  @media (max-width: 900px){
+    .app{grid-template-columns:1fr}
+    .sidebar{border-right:0;border-bottom:2px solid var(--line)}
+    :root{--cell:80px}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <h1>Sudokiller Tester</h1>
+    <div class="subtitle">
+      Nivel 10 · Oficina de correos · 6×6<br>
+      Los nombres y pistas son editables directamente acá.
+    </div>
+
+    <div id="characters" class="characters"></div>
+
+    <div class="tools">
+      <div class="tool-row">
+        <button id="noteTool" class="active" title="Seleccioná un personaje y hacé click para anotar">✎ Nota</button>
+        <button id="xTool" title="Hacé click en celdas para marcar o desmarcar X">✕ X</button>
+        <button id="eraserTool" title="Borra notas y X manuales de una celda">⌫ Goma</button>
+      </div>
+      <button id="resetBtn" class="reset">Limpiar todo el tablero</button>
+    </div>
+
+    <div class="help">
+      <b>Uso:</b><br>
+      • Click en personaje → lo selecciona.<br>
+      • Click corto en celda → agrega/quita una nota con su inicial.<br>
+      • Mantener apretado ~0.55 s → fija al personaje con letra grande.<br>
+      • Al fijarlo, su fila y columna se marcan automáticamente con X.<br>
+      • Herramienta X → agrega X manuales.<br>
+      • Goma → borra notas + X manuales de esa celda.<br>
+      • Mantener apretado con la goma sobre una colocación → la elimina.
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <div class="level-title">Nivel 10 — Post Office</div>
+        <div style="font-size:12px;opacity:.65">Zona de paquetes · Descarga · Hall · Oficina</div>
+      </div>
+      <div id="modeStatus" class="mode-status">Modo: nota</div>
+    </div>
+
+    <div class="board-wrap">
+      <div class="col-labels">
+        <div>A</div><div>B</div><div>C</div><div>D</div><div>E</div><div>F</div>
+      </div>
+      <div class="row-labels">
+        <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div>
+      </div>
+      <div id="board" class="board"></div>
+    </div>
+
+    <div class="legend">
+      <span>Celeste = zona de paquetes</span>
+      <span>Naranja = descarga</span>
+      <span>Verde = hall</span>
+      <span>Violeta = oficina</span>
+      <span>X gris = bloqueo automático</span>
+      <span>X roja = descarte manual</span>
+    </div>
+  </main>
+</div>
+
+<script>
+const COLS = ["A","B","C","D","E","F"];
+const ROWS = [1,2,3,4,5,6];
+
+/*
+  Personajes editables.
+  Podés reemplazar los nombres/pistas desde la interfaz o directamente acá.
+*/
+const characters = [
+  { id:"p1", name:"Agatha", clue:"Pegá acá la pista de Agatha.", color:"#3c78d8" },
+  { id:"p2", name:"Bruno", clue:"Pegá acá la pista de Bruno.", color:"#d96c39" },
+  { id:"p3", name:"Clara", clue:"Pegá acá la pista de Clara.", color:"#6f9d52" },
+  { id:"p4", name:"Dante", clue:"Pegá acá la pista de Dante.", color:"#a25bb5" },
+  { id:"p5", name:"Elena", clue:"Pegá acá la pista de Elena.", color:"#c09b2f" },
+  { id:"p6", name:"Victor", clue:"La víctima. Estaba a solas con el asesino.", color:"#575d66", victim:true }
+];
+
+const zones = {
+  A1:"zona de paquetes",B1:"zona de paquetes",C1:"zona de paquetes",D1:"descarga",E1:"descarga",F1:"descarga",
+  A2:"zona de paquetes",B2:"zona de paquetes",C2:"zona de paquetes",D2:"descarga",E2:"descarga",F2:"descarga",
+  A3:"zona de paquetes",B3:"zona de paquetes",C3:"zona de paquetes",D3:"zona de paquetes",E3:"zona de paquetes",F3:"zona de paquetes",
+  A4:"hall",B4:"hall",C4:"hall",D4:"zona de paquetes",E4:"zona de paquetes",F4:"zona de paquetes",
+  A5:"hall",B5:"hall",C5:"hall",D5:"oficina",E5:"oficina",F5:"oficina",
+  A6:"hall",B6:"hall",C6:"hall",D6:"oficina",E6:"oficina",F6:"oficina"
+};
+
+const objects = {
+  A1:"estanteria",B1:"estanteria",C1:"estanteria",D1:"caja",E1:"vehiculo",F1:"vehiculo",
+  A2:"caja",B2:"vacio",C2:"vacio",D2:"vacio",E2:"vacio",F2:"vacio",
+  A3:"caja",B3:"vacio",C3:"silla",D3:"caja",E3:"caja",F3:"caja",
+  A4:"planta",B4:"silla",C4:"vacio",D4:"vacio",E4:"vacio",F4:"silla",
+  A5:"mesa",B5:"mesa",C5:"mesa",D5:"vacio",E5:"silla",F5:"planta",
+  A6:"silla",B6:"vacio",C6:"silla",D6:"vacio",E6:"mesa",F6:"vacio"
+};
+
+const zoneColors = {
+  "zona de paquetes":"#dce9ea",
+  "descarga":"#ead9c8",
+  "hall":"#dce7d2",
+  "oficina":"#e5dcea"
+};
+
+let selectedCharacter = characters[0].id;
+let mode = "note";
+const notes = new Map();          // cell => Set(characterId)
+const manualX = new Set();        // cells
+const placements = new Map();     // characterId => cell
+
+const board = document.getElementById("board");
+const charWrap = document.getElementById("characters");
+const status = document.getElementById("modeStatus");
+
+function initials(name){
+  const clean = (name || "?").trim();
+  return clean ? clean[0].toUpperCase() : "?";
+}
+
+function getCharacter(id){
+  return characters.find(c => c.id === id);
+}
+
+function cellRow(cellId){ return Number(cellId.slice(1)); }
+function cellCol(cellId){ return cellId[0]; }
+
+function isAutoBlocked(cellId){
+  for (const [, placedCell] of placements){
+    if (placedCell === cellId) continue;
+    if (cellRow(placedCell) === cellRow(cellId) || cellCol(placedCell) === cellCol(cellId)){
+      return true;
+    }
+  }
+  return false;
+}
+
+function buildCharacters(){
+  charWrap.innerHTML = "";
+  characters.forEach(ch => {
+    const card = document.createElement("div");
+    card.className = "character" + (ch.id === selectedCharacter ? " selected" : "") + (ch.victim ? " victim" : "");
+    card.style.setProperty("--char-color", ch.color);
+    card.dataset.id = ch.id;
+
+    card.innerHTML = `
+      <div class="character-top">
+        <div class="badge">${initials(ch.name)}</div>
+        <input class="name-input" value="${escapeHtml(ch.name)}" aria-label="Nombre">
+      </div>
+      <textarea class="clue-input" aria-label="Pista">${escapeHtml(ch.clue)}</textarea>
+    `;
+
+    card.addEventListener("click", (e)=>{
+      if(e.target.matches("input,textarea")) return;
+      selectedCharacter = ch.id;
+      mode = "note";
+      syncToolButtons();
+      buildCharacters();
+    });
+
+    const nameInput = card.querySelector(".name-input");
+    const clueInput = card.querySelector(".clue-input");
+
+    nameInput.addEventListener("click", e => e.stopPropagation());
+    clueInput.addEventListener("click", e => e.stopPropagation());
+
+    nameInput.addEventListener("input", e => {
+      ch.name = e.target.value;
+      card.querySelector(".badge").textContent = initials(ch.name);
+      renderBoard();
+    });
+    clueInput.addEventListener("input", e => ch.clue = e.target.value);
+
+    charWrap.appendChild(card);
+  });
+}
+
+function escapeHtml(str){
+  return String(str)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;");
+}
+
+function objClass(obj){
+  return {
+    silla:"obj-silla",
+    estanteria:"obj-estanteria",
+    caja:"obj-caja",
+    vehiculo:"obj-vehiculo",
+    planta:"obj-planta",
+    mesa:"obj-mesa"
+  }[obj] || "";
+}
+
+function boundaryClasses(colIndex,rowIndex,cellId){
+  const z = zones[cellId];
+  const out = [];
+  const top = rowIndex === 0 ? null : `${COLS[colIndex]}${ROWS[rowIndex-1]}`;
+  const bottom = rowIndex === ROWS.length-1 ? null : `${COLS[colIndex]}${ROWS[rowIndex+1]}`;
+  const left = colIndex === 0 ? null : `${COLS[colIndex-1]}${ROWS[rowIndex]}`;
+  const right = colIndex === COLS.length-1 ? null : `${COLS[colIndex+1]}${ROWS[rowIndex]}`;
+
+  if(top && zones[top] !== z) out.push("boundary-top");
+  if(bottom && zones[bottom] !== z) out.push("boundary-bottom");
+  if(left && zones[left] !== z) out.push("boundary-left");
+  if(right && zones[right] !== z) out.push("boundary-right");
+  return out.join(" ");
+}
+
+function renderBoard(){
+  board.innerHTML = "";
+  ROWS.forEach((r,rowIndex)=>{
+    COLS.forEach((c,colIndex)=>{
+      const id = `${c}${r}`;
+      const cell = document.createElement("div");
+      cell.className = `cell ${boundaryClasses(colIndex,rowIndex,id)}`;
+      cell.dataset.cell = id;
+      cell.style.setProperty("--zone-bg", zoneColors[zones[id]] || "#eee");
+
+      const object = objects[id];
+      let objectHtml = "";
+      if(object !== "vacio"){
+        objectHtml = `
+          <div class="object">
+            <div class="${objClass(object)}"></div>
+            <div class="object-label">${object}</div>
+          </div>`;
+      }
+
+      let notesHtml = "";
+      const set = notes.get(id);
+      if(set && set.size){
+        notesHtml = `<div class="notes">` + [...set].map(pid=>{
+          const ch = getCharacter(pid);
+          return `<span class="note" style="--note-color:${ch.color}">${initials(ch.name)}</span>`;
+        }).join("") + `</div>`;
+      }
+
+      const placed = [...placements.entries()].find(([,cellId])=>cellId === id);
+      let placementHtml = "";
+      if(placed){
+        const ch = getCharacter(placed[0]);
+        placementHtml = `
+          <div class="placement" style="--placement-color:${ch.color}">
+            <div class="placement-letter">${initials(ch.name)}</div>
+            <div class="placement-name">${escapeHtml(ch.name)}</div>
+          </div>`;
+      }
+
+      const manualXHtml = manualX.has(id) ? `<div class="manual-x">×</div>` : "";
+      const autoXHtml = isAutoBlocked(id) && !placed ? `<div class="auto-x">×</div>` : "";
+
+      cell.innerHTML = `
+        <div class="coord">${id}</div>
+        ${objectHtml}
+        ${autoXHtml}
+        ${manualXHtml}
+        ${notesHtml}
+        ${placementHtml}
+        <div class="zone-name">${zones[id]}</div>
+      `;
+
+      attachCellEvents(cell);
+      board.appendChild(cell);
+    });
+  });
+}
+
+function toggleNote(cellId){
+  if(!selectedCharacter) return;
+  if(!notes.has(cellId)) notes.set(cellId,new Set());
+  const s = notes.get(cellId);
+  if(s.has(selectedCharacter)) s.delete(selectedCharacter);
+  else s.add(selectedCharacter);
+  if(s.size === 0) notes.delete(cellId);
+}
+
+function eraseCell(cellId){
+  notes.delete(cellId);
+  manualX.delete(cellId);
+}
+
+function toggleManualX(cellId){
+  if(manualX.has(cellId)) manualX.delete(cellId);
+  else manualX.add(cellId);
+}
+
+function placeSelected(cellId){
+  if(!selectedCharacter) return;
+
+  // Si otra persona ya estaba en esta celda, la saca.
+  for(const [pid,cid] of placements.entries()){
+    if(cid === cellId && pid !== selectedCharacter){
+      placements.delete(pid);
+    }
+  }
+
+  // Toggle si ya estaba puesta ahí; si estaba en otra, la mueve.
+  if(placements.get(selectedCharacter) === cellId){
+    placements.delete(selectedCharacter);
+  } else {
+    placements.set(selectedCharacter, cellId);
+    notes.delete(cellId);
+    manualX.delete(cellId);
+  }
+}
+
+function removePlacementAt(cellId){
+  for(const [pid,cid] of placements.entries()){
+    if(cid === cellId){
+      placements.delete(pid);
+      return;
+    }
+  }
+}
+
+function attachCellEvents(cell){
+  let timer = null;
+  let longPressed = false;
+  const cellId = cell.dataset.cell;
+
+  const start = (e)=>{
+    if(e.type === "mousedown" && e.button !== 0) return;
+    longPressed = false;
+    timer = setTimeout(()=>{
+      longPressed = true;
+      if(mode === "eraser") removePlacementAt(cellId);
+      else if(mode === "note") placeSelected(cellId);
+      renderBoard();
+    }, 550);
+  };
+
+  const cancel = ()=>{
+    if(timer){ clearTimeout(timer); timer = null; }
+  };
+
+  const end = (e)=>{
+    cancel();
+    if(longPressed){
+      e.preventDefault();
+      return;
+    }
+
+    if(mode === "note") toggleNote(cellId);
+    if(mode === "x") toggleManualX(cellId);
+    if(mode === "eraser") eraseCell(cellId);
+    renderBoard();
+  };
+
+  cell.addEventListener("mousedown", start);
+  cell.addEventListener("mouseup", end);
+  cell.addEventListener("mouseleave", cancel);
+
+  cell.addEventListener("touchstart", start, {passive:true});
+  cell.addEventListener("touchend", end);
+  cell.addEventListener("touchcancel", cancel);
+
+  cell.addEventListener("contextmenu", e=>e.preventDefault());
+}
+
+function syncToolButtons(){
+  document.getElementById("noteTool").classList.toggle("active",mode==="note");
+  document.getElementById("xTool").classList.toggle("active",mode==="x");
+  document.getElementById("eraserTool").classList.toggle("active",mode==="eraser");
+
+  const labels = {note:"nota / colocar", x:"X manual", eraser:"goma"};
+  status.textContent = "Modo: " + labels[mode];
+}
+
+document.getElementById("noteTool").addEventListener("click",()=>{
+  mode="note"; syncToolButtons();
+});
+document.getElementById("xTool").addEventListener("click",()=>{
+  mode="x"; syncToolButtons();
+});
+document.getElementById("eraserTool").addEventListener("click",()=>{
+  mode="eraser"; syncToolButtons();
+});
+document.getElementById("resetBtn").addEventListener("click",()=>{
+  if(confirm("¿Limpiar notas, X y personajes colocados?")){
+    notes.clear();
+    manualX.clear();
+    placements.clear();
+    renderBoard();
+  }
+});
+
+buildCharacters();
+renderBoard();
+syncToolButtons();
+</script>
+</body>
+</html>
