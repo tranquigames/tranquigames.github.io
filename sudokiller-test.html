@@ -455,7 +455,7 @@
     <h1>Sudokiller Tester</h1>
     <div class="subtitle">
       Nivel 10 · Oficina de correos · 6×6<br>
-      Los nombres y pistas son editables directamente acá.
+      Incluye las dos zonas de paquetes separadas. Los nombres y pistas siguen siendo editables.
     </div>
 
     <div id="characters" class="characters"></div>
@@ -520,21 +520,21 @@ const ROWS = [1,2,3,4,5,6];
   Podés reemplazar los nombres/pistas desde la interfaz o directamente acá.
 */
 const characters = [
-  { id:"p1", name:"Agatha", clue:"Pegá acá la pista de Agatha.", color:"#3c78d8" },
-  { id:"p2", name:"Bruno", clue:"Pegá acá la pista de Bruno.", color:"#d96c39" },
-  { id:"p3", name:"Clara", clue:"Pegá acá la pista de Clara.", color:"#6f9d52" },
-  { id:"p4", name:"Dante", clue:"Pegá acá la pista de Dante.", color:"#a25bb5" },
-  { id:"p5", name:"Elena", clue:"Pegá acá la pista de Elena.", color:"#c09b2f" },
-  { id:"p6", name:"Victor", clue:"La víctima. Estaba a solas con el asesino.", color:"#575d66", victim:true }
+  { id:"p1", name:"Hugo", clue:"Era una de las cuatro personas que estaban sentadas, no estaba en una esquina.", color:"#3c78d8" },
+  { id:"p2", name:"Laszlo", clue:"Había una planta en su zona.", color:"#d96c39" },
+  { id:"p3", name:"Paula", clue:"No tenía a nadie más en su zona y estaba sentada.", color:"#6f9d52" },
+  { id:"p4", name:"Frances", clue:"Era la única persona junto a una silla.", color:"#a25bb5" },
+  { id:"p5", name:"Damian", clue:"Estaba sentado, al sur de Paula y no estaba junto a una planta.", color:"#c09b2f" },
+  { id:"p6", name:"Vincent", clue:"La víctima. Estaba a solas con el asesino.", color:"#575d66", victim:true }
 ];
 
 const zones = {
-  A1:"zona de paquetes",B1:"zona de paquetes",C1:"zona de paquetes",D1:"descarga",E1:"descarga",F1:"descarga",
-  A2:"zona de paquetes",B2:"zona de paquetes",C2:"zona de paquetes",D2:"descarga",E2:"descarga",F2:"descarga",
-  A3:"zona de paquetes",B3:"zona de paquetes",C3:"zona de paquetes",D3:"zona de paquetes",E3:"zona de paquetes",F3:"zona de paquetes",
-  A4:"hall",B4:"hall",C4:"hall",D4:"zona de paquetes",E4:"zona de paquetes",F4:"zona de paquetes",
-  A5:"hall",B5:"hall",C5:"hall",D5:"oficina",E5:"oficina",F5:"oficina",
-  A6:"hall",B6:"hall",C6:"hall",D6:"oficina",E6:"oficina",F6:"oficina"
+  A1:{id:"paq1",label:"zona de paquetes"}, B1:{id:"paq1",label:"zona de paquetes"}, C1:{id:"paq1",label:"zona de paquetes"}, D1:{id:"descarga",label:"descarga"}, E1:{id:"descarga",label:"descarga"}, F1:{id:"descarga",label:"descarga"},
+  A2:{id:"paq1",label:"zona de paquetes"}, B2:{id:"paq1",label:"zona de paquetes"}, C2:{id:"paq1",label:"zona de paquetes"}, D2:{id:"descarga",label:"descarga"}, E2:{id:"descarga",label:"descarga"}, F2:{id:"descarga",label:"descarga"},
+  A3:{id:"paq1",label:"zona de paquetes"}, B3:{id:"paq1",label:"zona de paquetes"}, C3:{id:"paq1",label:"zona de paquetes"}, D3:{id:"paq2",label:"zona de paquetes"}, E3:{id:"paq2",label:"zona de paquetes"}, F3:{id:"paq2",label:"zona de paquetes"},
+  A4:{id:"hall",label:"hall"}, B4:{id:"hall",label:"hall"}, C4:{id:"hall",label:"hall"}, D4:{id:"paq2",label:"zona de paquetes"}, E4:{id:"paq2",label:"zona de paquetes"}, F4:{id:"paq2",label:"zona de paquetes"},
+  A5:{id:"hall",label:"hall"}, B5:{id:"hall",label:"hall"}, C5:{id:"hall",label:"hall"}, D5:{id:"oficina",label:"oficina"}, E5:{id:"oficina",label:"oficina"}, F5:{id:"oficina",label:"oficina"},
+  A6:{id:"hall",label:"hall"}, B6:{id:"hall",label:"hall"}, C6:{id:"hall",label:"hall"}, D6:{id:"oficina",label:"oficina"}, E6:{id:"oficina",label:"oficina"}, F6:{id:"oficina",label:"oficina"}
 };
 
 const objects = {
@@ -547,7 +547,8 @@ const objects = {
 };
 
 const zoneColors = {
-  "zona de paquetes":"#dce9ea",
+  "paq1":"#dce9ea",
+  "paq2":"#cfe2e4",
   "descarga":"#ead9c8",
   "hall":"#dce7d2",
   "oficina":"#e5dcea"
@@ -646,17 +647,17 @@ function objClass(obj){
 }
 
 function boundaryClasses(colIndex,rowIndex,cellId){
-  const z = zones[cellId];
+  const z = zones[cellId]?.id;
   const out = [];
   const top = rowIndex === 0 ? null : `${COLS[colIndex]}${ROWS[rowIndex-1]}`;
   const bottom = rowIndex === ROWS.length-1 ? null : `${COLS[colIndex]}${ROWS[rowIndex+1]}`;
   const left = colIndex === 0 ? null : `${COLS[colIndex-1]}${ROWS[rowIndex]}`;
   const right = colIndex === COLS.length-1 ? null : `${COLS[colIndex+1]}${ROWS[rowIndex]}`;
 
-  if(top && zones[top] !== z) out.push("boundary-top");
-  if(bottom && zones[bottom] !== z) out.push("boundary-bottom");
-  if(left && zones[left] !== z) out.push("boundary-left");
-  if(right && zones[right] !== z) out.push("boundary-right");
+  if(top && zones[top]?.id !== z) out.push("boundary-top");
+  if(bottom && zones[bottom]?.id !== z) out.push("boundary-bottom");
+  if(left && zones[left]?.id !== z) out.push("boundary-left");
+  if(right && zones[right]?.id !== z) out.push("boundary-right");
   return out.join(" ");
 }
 
@@ -668,7 +669,7 @@ function renderBoard(){
       const cell = document.createElement("div");
       cell.className = `cell ${boundaryClasses(colIndex,rowIndex,id)}`;
       cell.dataset.cell = id;
-      cell.style.setProperty("--zone-bg", zoneColors[zones[id]] || "#eee");
+      cell.style.setProperty("--zone-bg", zoneColors[zones[id]?.id] || "#eee");
 
       const object = objects[id];
       let objectHtml = "";
@@ -710,7 +711,7 @@ function renderBoard(){
         ${manualXHtml}
         ${notesHtml}
         ${placementHtml}
-        <div class="zone-name">${zones[id]}</div>
+        <div class="zone-name">${zones[id]?.label || ""}</div>
       `;
 
       attachCellEvents(cell);
