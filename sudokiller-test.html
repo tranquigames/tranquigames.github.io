@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Sudokiller Level Tester — Nivel 10</title>
+<title>Sudokiller Level Tester</title>
 <style>
   :root{
     --bg:#e9e2d0;
@@ -11,13 +11,13 @@
     --ink:#2d2a26;
     --line:#5e574c;
     --soft:#b9ad97;
-    --cell:clamp(72px, 9vw, 118px);
+    --cell:96px;
   }
 
   *{box-sizing:border-box}
   body{
     margin:0;
-    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
     background:var(--bg);
     color:var(--ink);
     min-height:100vh;
@@ -25,7 +25,7 @@
 
   .app{
     display:grid;
-    grid-template-columns: minmax(300px, 370px) 1fr;
+    grid-template-columns:minmax(330px,390px) 1fr;
     min-height:100vh;
   }
 
@@ -34,418 +34,207 @@
     border-right:2px solid var(--line);
     padding:18px;
     overflow:auto;
+    max-height:100vh;
+    position:sticky;
+    top:0;
   }
 
-  h1{
-    font-size:22px;
-    margin:0 0 4px;
+  h1{font-size:22px;margin:0 0 4px}
+  .subtitle{font-size:13px;opacity:.72;margin-bottom:14px;line-height:1.35}
+
+  .section-title{
+    font-size:11px;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:#786e60;
+    margin:14px 0 7px;
   }
 
-  .subtitle{
-    font-size:13px;
-    opacity:.72;
-    margin-bottom:16px;
-    line-height:1.35;
+  .level-tabs{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:7px;
+    margin-bottom:15px;
   }
 
-  .characters{
-    display:flex;
-    flex-direction:column;
-    gap:9px;
+  .level-tab{
+    min-height:44px;
+    padding:7px 9px;
+    text-align:left;
+    border:2px solid #b9ad97;
+    background:#fffaf0;
+    border-radius:9px;
+    cursor:pointer;
+  }
+  .level-tab strong{display:block;font-size:13px}
+  .level-tab small{display:block;opacity:.65;margin-top:2px}
+  .level-tab.active{
+    background:#332f2a;
+    color:white;
+    border-color:#332f2a;
   }
 
+  .characters{display:flex;flex-direction:column;gap:8px}
   .character{
     border:2px solid #c8bca5;
     border-left:9px solid var(--char-color);
     background:#fffaf0;
     border-radius:10px;
-    padding:9px 10px;
+    padding:8px 10px;
     cursor:pointer;
     transition:.12s ease;
   }
-  .character:hover{ transform:translateY(-1px); }
+  .character:hover{transform:translateY(-1px)}
   .character.selected{
     border-color:var(--char-color);
-    box-shadow:0 0 0 3px color-mix(in srgb, var(--char-color) 20%, transparent);
+    box-shadow:0 0 0 3px color-mix(in srgb,var(--char-color) 20%,transparent);
   }
-
-  .character-top{
-    display:flex;
-    align-items:center;
-    gap:8px;
-  }
-
+  .character-top{display:flex;align-items:center;gap:8px}
   .badge{
-    width:30px;height:30px;
-    border-radius:50%;
-    display:grid;
-    place-items:center;
-    background:var(--char-color);
-    color:white;
-    font-weight:900;
-    flex:0 0 auto;
+    width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
+    background:var(--char-color);color:white;font-weight:900;flex:0 0 auto;
   }
-
+  .victim .badge{border:3px solid #332f2a}
+  .victim-tag{
+    margin-left:auto;font-size:9px;font-weight:900;letter-spacing:.05em;
+    padding:3px 5px;border:1px solid #8b8172;border-radius:5px;background:#eee7da;
+  }
   .name-input{
-    width:100%;
-    border:0;
-    border-bottom:1px dashed #a99c86;
-    background:transparent;
-    color:var(--ink);
-    font-size:15px;
-    font-weight:800;
-    padding:2px 0;
-    outline:none;
+    width:100%;border:0;border-bottom:1px dashed #a99c86;background:transparent;
+    color:var(--ink);font-size:14px;font-weight:800;padding:2px 0;outline:none;
   }
-
   .clue-input{
-    width:100%;
-    min-height:42px;
-    margin-top:6px;
-    border:0;
-    background:transparent;
-    resize:vertical;
-    color:#4a443c;
-    font:inherit;
-    font-size:12.5px;
-    line-height:1.35;
-    outline:none;
+    width:100%;min-height:38px;margin-top:5px;border:0;background:transparent;
+    resize:vertical;color:#4a443c;font:inherit;font-size:12px;line-height:1.35;outline:none;
   }
 
-  .victim .badge{ border:3px solid #332f2a; }
-
-  .tools{
-    margin-top:16px;
-    padding-top:14px;
-    border-top:1px solid #c8bca5;
-  }
-
-  .tool-row{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:8px;
-    margin-bottom:8px;
-  }
-
+  .tools{margin-top:14px;padding-top:12px;border-top:1px solid #c8bca5}
+  .tool-row{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:7px}
+  .history-row{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px}
   button{
-    border:2px solid #8f826c;
-    background:#fffaf0;
-    color:#332f2a;
-    border-radius:9px;
-    min-height:42px;
-    font-weight:800;
-    cursor:pointer;
+    border:2px solid #8f826c;background:#fffaf0;color:#332f2a;border-radius:9px;
+    min-height:40px;font-weight:800;cursor:pointer;
   }
-  button:hover{ background:#f1eadc; }
-  button.active{
-    background:#332f2a;
-    color:#fff;
-    border-color:#332f2a;
-  }
-
-  .reset{
-    width:100%;
-    border-style:dashed;
-  }
+  button:hover:not(:disabled){background:#f1eadc}
+  button.active{background:#332f2a;color:#fff;border-color:#332f2a}
+  button:disabled{opacity:.35;cursor:default}
+  .reset{width:100%;border-style:dashed}
 
   .help{
-    margin-top:13px;
-    font-size:12px;
-    line-height:1.45;
-    color:#62594d;
-    background:#eee5d3;
-    padding:10px;
-    border-radius:8px;
+    margin-top:12px;font-size:11.5px;line-height:1.45;color:#62594d;
+    background:#eee5d3;padding:10px;border-radius:8px;
   }
 
-  .main{
-    padding:22px;
-    overflow:auto;
-  }
-
+  .main{padding:22px;overflow:auto;min-width:0}
   .topbar{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-end;
-    gap:14px;
-    margin-bottom:14px;
-    min-width:max-content;
+    display:flex;justify-content:space-between;align-items:flex-end;gap:14px;
+    margin-bottom:14px;min-width:max-content;
   }
-
-  .level-title{
-    font-weight:900;
-    font-size:20px;
-  }
-
+  .level-title{font-weight:900;font-size:20px}
+  .level-meta{font-size:12px;opacity:.65;margin-top:2px}
   .mode-status{
-    font-size:13px;
-    background:#fffaf0;
-    border:1px solid #ad9f88;
-    padding:7px 10px;
-    border-radius:999px;
+    font-size:13px;background:#fffaf0;border:1px solid #ad9f88;
+    padding:7px 10px;border-radius:999px;
   }
 
   .board-wrap{
-    display:grid;
-    grid-template-columns: 30px auto;
-    grid-template-rows: 30px auto;
-    width:max-content;
-    user-select:none;
-    -webkit-user-select:none;
-    touch-action:manipulation;
+    display:grid;grid-template-columns:30px auto;grid-template-rows:30px auto;
+    width:max-content;user-select:none;-webkit-user-select:none;touch-action:manipulation;
   }
-
-  .col-labels{
-    grid-column:2;
-    display:grid;
-    grid-template-columns:repeat(6,var(--cell));
-    align-items:center;
-    text-align:center;
-    font-weight:900;
-    font-size:13px;
-  }
-
-  .row-labels{
-    grid-row:2;
-    display:grid;
-    grid-template-rows:repeat(6,var(--cell));
-    align-items:center;
-    text-align:center;
-    font-weight:900;
-    font-size:13px;
-  }
-
+  .col-labels{grid-column:2;display:grid;align-items:center;text-align:center;font-weight:900;font-size:13px}
+  .row-labels{grid-row:2;display:grid;align-items:center;text-align:center;font-weight:900;font-size:13px}
   .board{
-    grid-column:2;
-    grid-row:2;
-    display:grid;
-    grid-template-columns:repeat(6,var(--cell));
-    grid-template-rows:repeat(6,var(--cell));
-    border:4px solid #2f2c28;
-    background:#fff;
+    grid-column:2;grid-row:2;display:grid;border:4px solid #2f2c28;background:#fff;
   }
 
   .cell{
-    width:var(--cell);
-    height:var(--cell);
-    position:relative;
-    background:var(--zone-bg);
-    overflow:hidden;
-    cursor:pointer;
-    border:1px solid rgba(60,55,48,.28);
+    width:var(--cell);height:var(--cell);position:relative;background:var(--zone-bg);
+    overflow:hidden;cursor:pointer;border:1px solid rgba(60,55,48,.28);
   }
-
   .cell:hover::after{
-    content:"";
-    position:absolute;
-    inset:2px;
-    border:2px dashed rgba(45,42,38,.28);
-    pointer-events:none;
-    z-index:10;
+    content:"";position:absolute;inset:2px;border:2px dashed rgba(45,42,38,.28);
+    pointer-events:none;z-index:12;
   }
+  .cell.boundary-top{border-top:4px solid #2f2c28}
+  .cell.boundary-right{border-right:4px solid #2f2c28}
+  .cell.boundary-bottom{border-bottom:4px solid #2f2c28}
+  .cell.boundary-left{border-left:4px solid #2f2c28}
 
-  .cell.boundary-top{ border-top:4px solid #2f2c28; }
-  .cell.boundary-right{ border-right:4px solid #2f2c28; }
-  .cell.boundary-bottom{ border-bottom:4px solid #2f2c28; }
-  .cell.boundary-left{ border-left:4px solid #2f2c28; }
-
-  .coord{
-    position:absolute;
-    top:4px; left:5px;
-    font-size:10px;
-    font-weight:800;
-    opacity:.48;
-    z-index:5;
-  }
-
+  .coord{position:absolute;top:4px;left:5px;font-size:10px;font-weight:800;opacity:.48;z-index:5}
   .zone-name{
-    position:absolute;
-    left:5px; right:5px; bottom:4px;
-    font-size:8.5px;
-    line-height:1.05;
-    text-transform:uppercase;
-    letter-spacing:.03em;
-    opacity:.48;
-    text-align:center;
-    z-index:2;
-    pointer-events:none;
+    position:absolute;left:4px;right:4px;bottom:3px;font-size:8px;line-height:1;
+    text-transform:uppercase;letter-spacing:.025em;opacity:.48;text-align:center;
+    z-index:2;pointer-events:none;
   }
 
-  .object{
-    position:absolute;
-    inset:15px 12px 20px;
-    display:grid;
-    place-items:center;
-    pointer-events:none;
-    z-index:2;
-  }
-
+  .object{position:absolute;inset:15px 10px 18px;display:grid;place-items:center;pointer-events:none;z-index:2}
+  .object-shape{position:relative}
   .object-label{
-    position:absolute;
-    left:50%;
-    top:50%;
-    transform:translate(-50%,-50%);
-    font-size:8px;
-    font-weight:900;
-    text-transform:uppercase;
-    letter-spacing:.02em;
-    white-space:nowrap;
-    pointer-events:none;
-    z-index:3;
-    color:#3c352d;
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    font-size:7px;font-weight:950;text-transform:uppercase;letter-spacing:.015em;
+    white-space:nowrap;pointer-events:none;z-index:3;color:#302a25;
+    background:rgba(255,250,240,.62);padding:1px 2px;border-radius:2px;
   }
 
-  /* Objetos cenitales muy simples */
-  .obj-silla{
-    width:30px;height:30px;
-    border:4px solid #71513c;
-    background:#b88962;
-    box-shadow:0 -10px 0 -4px #71513c;
-  }
-  .obj-estanteria{
-    width:58px;height:27px;
-    background:#8e6748;
-    border:4px solid #5e432f;
-    background-image:linear-gradient(90deg, transparent 30%, #5e432f 30% 36%, transparent 36% 64%, #5e432f 64% 70%, transparent 70%);
-  }
-  .obj-caja{
-    width:42px;height:42px;
-    background:#c99a62;
-    border:3px solid #86613c;
-  }
-  .obj-caja::before,.obj-caja::after{
-    content:"";
-    position:absolute;
-  }
-  .obj-vehiculo{
-    width:60px;height:36px;
-    background:#7a95a8;
-    border:4px solid #40515c;
-    border-radius:8px;
-    position:relative;
-  }
-  .obj-vehiculo::before,
-  .obj-vehiculo::after{
-    content:"";
-    position:absolute;
-    width:8px;height:18px;
-    background:#2e3337;
-    top:5px;
-  }
-  .obj-vehiculo::before{left:-9px}
-  .obj-vehiculo::after{right:-9px}
-  .obj-planta{
-    width:34px;height:34px;
-    background:#66895d;
-    border:4px solid #435e3d;
-    border-radius:50% 45% 55% 42%;
-    transform:rotate(14deg);
-  }
-  .obj-mesa{
-    width:62px;height:40px;
-    background:#a57a56;
-    border:4px solid #6e513c;
-  }
+  /* Objetos cenitales simples: claridad > belleza */
+  .obj-silla{width:29px;height:29px;border:4px solid #71513c;background:#b88962;box-shadow:0 -9px 0 -4px #71513c}
+  .obj-banco{width:58px;height:25px;border:4px solid #71513c;background:#b88962;border-radius:3px}
+  .obj-estanteria{width:58px;height:27px;background:#8e6748;border:4px solid #5e432f;background-image:linear-gradient(90deg,transparent 30%,#5e432f 30% 36%,transparent 36% 64%,#5e432f 64% 70%,transparent 70%)}
+  .obj-caja{width:40px;height:40px;background:#c99a62;border:3px solid #86613c}
+  .obj-vehiculo{width:58px;height:34px;background:#7a95a8;border:4px solid #40515c;border-radius:8px}
+  .obj-planta,.obj-arbusto{width:36px;height:36px;background:#66895d;border:4px solid #435e3d;border-radius:52% 45% 55% 44%}
+  .obj-arbusto{width:48px;height:34px;box-shadow:-12px 4px 0 -5px #66895d,12px 5px 0 -5px #66895d}
+  .obj-arbol{width:48px;height:48px;border-radius:50%;background:#5f8458;border:5px solid #3f5e3b;box-shadow:inset 0 0 0 9px #73986b}
+  .obj-mesa{width:60px;height:38px;background:#a57a56;border:4px solid #6e513c}
+  .obj-estatua{width:35px;height:35px;border-radius:50%;background:#b7b1a5;border:4px solid #77736d;box-shadow:0 0 0 5px #cbc5b9}
+  .obj-paloma{width:42px;height:27px;border-radius:55% 45% 55% 45%;background:#a7b1b6;border:3px solid #69767b;transform:rotate(-8deg)}
+  .obj-paloma::after{content:"";position:absolute;width:17px;height:12px;border-radius:50%;background:#d6dde0;left:10px;top:5px;transform:rotate(15deg)}
+  .obj-flores{width:44px;height:38px;background:radial-gradient(circle at 25% 40%,#d899a6 0 5px,transparent 6px),radial-gradient(circle at 55% 24%,#d6b55f 0 5px,transparent 6px),radial-gradient(circle at 72% 56%,#b78eb8 0 5px,transparent 6px),radial-gradient(circle at 38% 70%,#cf806d 0 5px,transparent 6px)}
+  .obj-fuente{width:48px;height:48px;border-radius:50%;border:7px solid #7d8f93;background:#a7d1d8;box-shadow:inset 0 0 0 5px #d8ecee}
+  .obj-tacho{width:37px;height:37px;border-radius:7px;background:#7f8586;border:4px solid #515758;box-shadow:inset 0 0 0 5px #a8acad}
 
   .notes{
-    position:absolute;
-    inset:9px 7px 20px;
-    display:flex;
-    flex-wrap:wrap;
-    align-content:flex-start;
-    justify-content:center;
-    gap:3px;
-    z-index:7;
-    pointer-events:none;
+    position:absolute;inset:8px 5px 17px;display:flex;flex-wrap:wrap;
+    align-content:flex-start;justify-content:center;gap:2px;z-index:7;pointer-events:none;
   }
-
   .note{
-    width:22px;height:22px;
-    display:grid;
-    place-items:center;
-    border-radius:50%;
-    background:#fffdf8e8;
-    border:2px solid currentColor;
-    color:var(--note-color);
-    font-size:12px;
-    font-weight:950;
-    box-shadow:0 1px 2px #0002;
+    width:20px;height:20px;display:grid;place-items:center;border-radius:50%;
+    background:#fffdf8ea;border:2px solid currentColor;color:var(--note-color);
+    font-size:11px;font-weight:950;box-shadow:0 1px 2px #0002;
   }
 
-  .manual-x,
-  .auto-x{
-    position:absolute;
-    inset:0;
-    display:grid;
-    place-items:center;
-    font-weight:1000;
-    pointer-events:none;
-  }
-  .manual-x{
-    z-index:6;
-    font-size:52px;
-    color:#a13c36;
-    text-shadow:0 2px 0 #fff9;
-  }
+  .manual-x,.auto-x{position:absolute;inset:0;display:grid;place-items:center;font-weight:1000;pointer-events:none}
+  .manual-x{z-index:6;font-size:clamp(46px,5.2vw,70px);color:#a13c36;text-shadow:0 2px 0 #fff9}
+  /* Más grandes y visibles que antes */
   .auto-x{
     z-index:4;
-    font-size:34px;
-    color:rgba(53,49,44,.30);
+    font-size:clamp(64px,7.2vw,102px);
+    line-height:.8;
+    color:rgba(53,49,44,.38);
+    text-shadow:0 1px 0 rgba(255,255,255,.6);
   }
 
   .placement{
-    position:absolute;
-    inset:4px;
-    z-index:9;
-    display:grid;
-    place-items:center;
+    position:absolute;inset:4px;z-index:9;display:grid;place-items:center;
     border:4px solid var(--placement-color);
-    background:color-mix(in srgb, var(--placement-color) 16%, #fff 84%);
-    border-radius:8px;
-    pointer-events:none;
-    box-shadow:0 2px 6px #0003;
+    background:color-mix(in srgb,var(--placement-color) 16%,#fff 84%);
+    border-radius:8px;pointer-events:none;box-shadow:0 2px 6px #0003;
   }
-
-  .placement-letter{
-    font-weight:1000;
-    font-size:clamp(42px,5vw,72px);
-    line-height:1;
-    color:var(--placement-color);
-    text-shadow:0 2px 0 #fff;
-  }
-
+  .placement-letter{font-weight:1000;font-size:clamp(40px,5vw,68px);line-height:1;color:var(--placement-color);text-shadow:0 2px 0 #fff}
   .placement-name{
-    position:absolute;
-    bottom:3px;
-    left:3px; right:3px;
-    font-size:8px;
-    font-weight:900;
-    text-align:center;
-    color:#2d2a26;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
+    position:absolute;bottom:3px;left:3px;right:3px;font-size:8px;font-weight:900;
+    text-align:center;color:#2d2a26;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   }
 
-  .legend{
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-    margin-top:14px;
-    font-size:11px;
-    width:min(100%, 760px);
-  }
-  .legend span{
-    padding:5px 8px;
-    border:1px solid #b6a98f;
-    border-radius:999px;
-    background:#f7f1e4;
-  }
+  .legend{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px;font-size:10.5px;max-width:950px}
+  .legend span{padding:5px 8px;border:1px solid #b6a98f;border-radius:999px;background:#f7f1e4}
+  .legend-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:-1px;border:1px solid #776f63}
 
-  @media (max-width: 900px){
+  @media(max-width:900px){
     .app{grid-template-columns:1fr}
-    .sidebar{border-right:0;border-bottom:2px solid var(--line)}
-    :root{--cell:80px}
+    .sidebar{position:static;max-height:none;border-right:0;border-bottom:2px solid var(--line)}
+    .main{padding:14px}
   }
 </style>
 </head>
@@ -453,11 +242,12 @@
 <div class="app">
   <aside class="sidebar">
     <h1>Sudokiller Tester</h1>
-    <div class="subtitle">
-      Nivel 10 · Oficina de correos · 6×6<br>
-      Incluye las dos zonas de paquetes separadas. Los nombres y pistas siguen siendo editables.
-    </div>
+    <div id="sidebarSubtitle" class="subtitle"></div>
 
+    <div class="section-title">Niveles</div>
+    <div id="levelTabs" class="level-tabs"></div>
+
+    <div class="section-title">Personajes y pistas</div>
     <div id="characters" class="characters"></div>
 
     <div class="tools">
@@ -466,382 +256,499 @@
         <button id="xTool" title="Hacé click en celdas para marcar o desmarcar X">✕ X</button>
         <button id="eraserTool" title="Borra notas y X manuales de una celda">⌫ Goma</button>
       </div>
-      <button id="resetBtn" class="reset">Limpiar todo el tablero</button>
+      <div class="history-row">
+        <button id="undoBtn" title="Deshacer (Ctrl/Cmd + Z)">↶ Deshacer</button>
+        <button id="redoBtn" title="Rehacer (Ctrl/Cmd + Y o Ctrl/Cmd + Shift + Z)">↷ Rehacer</button>
+      </div>
+      <button id="resetBtn" class="reset">Limpiar este nivel</button>
     </div>
 
     <div class="help">
       <b>Uso:</b><br>
+      • Elegí un nivel desde las tabs de arriba.<br>
       • Click en personaje → lo selecciona.<br>
-      • Click corto en celda → agrega/quita una nota con su inicial.<br>
+      • Click corto en celda → agrega/quita su nota.<br>
       • Mantener apretado ~0.55 s → fija al personaje con letra grande.<br>
-      • Al fijarlo, su fila y columna se marcan automáticamente con X.<br>
-      • Herramienta X → agrega X manuales.<br>
-      • Goma → borra notas + X manuales de esa celda.<br>
-      • Mantener apretado con la goma sobre una colocación → la elimina.
+      • Al fijarlo, toda su fila y columna se bloquean con X grandes.<br>
+      • Herramienta X → X manual roja.<br>
+      • Goma → borra notas + X manuales de una celda.<br>
+      • Mantener apretado con la goma → elimina una colocación.<br>
+      • Deshacer/Rehacer mantienen un historial separado por nivel.
     </div>
   </aside>
 
   <main class="main">
     <div class="topbar">
       <div>
-        <div class="level-title">Nivel 10 — Post Office</div>
-        <div style="font-size:12px;opacity:.65">Zona de paquetes · Descarga · Hall · Oficina</div>
+        <div id="levelTitle" class="level-title"></div>
+        <div id="levelMeta" class="level-meta"></div>
       </div>
       <div id="modeStatus" class="mode-status">Modo: nota</div>
     </div>
 
     <div class="board-wrap">
-      <div class="col-labels">
-        <div>A</div><div>B</div><div>C</div><div>D</div><div>E</div><div>F</div>
-      </div>
-      <div class="row-labels">
-        <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div>
-      </div>
+      <div id="colLabels" class="col-labels"></div>
+      <div id="rowLabels" class="row-labels"></div>
       <div id="board" class="board"></div>
     </div>
 
-    <div class="legend">
-      <span>Celeste = zona de paquetes</span>
-      <span>Naranja = descarga</span>
-      <span>Verde = hall</span>
-      <span>Violeta = oficina</span>
-      <span>X gris = bloqueo automático</span>
-      <span>X roja = descarte manual</span>
-    </div>
+    <div id="legend" class="legend"></div>
   </main>
 </div>
 
 <script>
-const COLS = ["A","B","C","D","E","F"];
-const ROWS = [1,2,3,4,5,6];
-
-/*
-  Personajes editables.
-  Podés reemplazar los nombres/pistas desde la interfaz o directamente acá.
-*/
-const characters = [
-  { id:"p1", name:"Hugo", clue:"Era una de las cuatro personas que estaban sentadas, no estaba en una esquina.", color:"#3c78d8" },
-  { id:"p2", name:"Laszlo", clue:"Había una planta en su zona.", color:"#d96c39" },
-  { id:"p3", name:"Paula", clue:"No tenía a nadie más en su zona y estaba sentada.", color:"#6f9d52" },
-  { id:"p4", name:"Frances", clue:"Era la única persona junto a una silla.", color:"#a25bb5" },
-  { id:"p5", name:"Damian", clue:"Estaba sentado, al sur de Paula y no estaba junto a una planta.", color:"#c09b2f" },
-  { id:"p6", name:"Vincent", clue:"La víctima. Estaba a solas con el asesino.", color:"#575d66", victim:true }
+const PALETTE = [
+  "#3c78d8","#d96c39","#6f9d52","#a25bb5","#c09b2f",
+  "#3b9b93","#c95773","#7469b6","#575d66","#8a6746","#4992c6"
 ];
 
-const zones = {
-  A1:{id:"paq1",label:"zona de paquetes"}, B1:{id:"paq1",label:"zona de paquetes"}, C1:{id:"paq1",label:"zona de paquetes"}, D1:{id:"descarga",label:"descarga"}, E1:{id:"descarga",label:"descarga"}, F1:{id:"descarga",label:"descarga"},
-  A2:{id:"paq1",label:"zona de paquetes"}, B2:{id:"paq1",label:"zona de paquetes"}, C2:{id:"paq1",label:"zona de paquetes"}, D2:{id:"descarga",label:"descarga"}, E2:{id:"descarga",label:"descarga"}, F2:{id:"descarga",label:"descarga"},
-  A3:{id:"paq1",label:"zona de paquetes"}, B3:{id:"paq1",label:"zona de paquetes"}, C3:{id:"paq1",label:"zona de paquetes"}, D3:{id:"paq2",label:"zona de paquetes"}, E3:{id:"paq2",label:"zona de paquetes"}, F3:{id:"paq2",label:"zona de paquetes"},
-  A4:{id:"hall",label:"hall"}, B4:{id:"hall",label:"hall"}, C4:{id:"hall",label:"hall"}, D4:{id:"paq2",label:"zona de paquetes"}, E4:{id:"paq2",label:"zona de paquetes"}, F4:{id:"paq2",label:"zona de paquetes"},
-  A5:{id:"hall",label:"hall"}, B5:{id:"hall",label:"hall"}, C5:{id:"hall",label:"hall"}, D5:{id:"oficina",label:"oficina"}, E5:{id:"oficina",label:"oficina"}, F5:{id:"oficina",label:"oficina"},
-  A6:{id:"hall",label:"hall"}, B6:{id:"hall",label:"hall"}, C6:{id:"hall",label:"hall"}, D6:{id:"oficina",label:"oficina"}, E6:{id:"oficina",label:"oficina"}, F6:{id:"oficina",label:"oficina"}
+const LEVELS = {
+  "10": {
+    id:"10",
+    tabTitle:"Nivel 10",
+    tabSubtitle:"Correo · 6×6",
+    title:"Nivel 10 — Oficina de correos",
+    meta:"6×6 · dos zonas de paquetes separadas",
+    size:6,
+    cellSize:104,
+    zoneColors:{
+      paq1:"#dce9ea", paq2:"#cfe2e4", descarga:"#ead9c8", hall:"#dce7d2", oficina:"#e5dcea"
+    },
+    zoneOrder:["paq1","paq2","descarga","hall","oficina"],
+    zones:{
+      A1:{id:"paq1",label:"zona de paquetes 1"},B1:{id:"paq1",label:"zona de paquetes 1"},C1:{id:"paq1",label:"zona de paquetes 1"},D1:{id:"descarga",label:"descarga"},E1:{id:"descarga",label:"descarga"},F1:{id:"descarga",label:"descarga"},
+      A2:{id:"paq1",label:"zona de paquetes 1"},B2:{id:"paq1",label:"zona de paquetes 1"},C2:{id:"paq1",label:"zona de paquetes 1"},D2:{id:"descarga",label:"descarga"},E2:{id:"descarga",label:"descarga"},F2:{id:"descarga",label:"descarga"},
+      A3:{id:"paq1",label:"zona de paquetes 1"},B3:{id:"paq1",label:"zona de paquetes 1"},C3:{id:"paq1",label:"zona de paquetes 1"},D3:{id:"paq2",label:"zona de paquetes 2"},E3:{id:"paq2",label:"zona de paquetes 2"},F3:{id:"paq2",label:"zona de paquetes 2"},
+      A4:{id:"hall",label:"hall"},B4:{id:"hall",label:"hall"},C4:{id:"hall",label:"hall"},D4:{id:"paq2",label:"zona de paquetes 2"},E4:{id:"paq2",label:"zona de paquetes 2"},F4:{id:"paq2",label:"zona de paquetes 2"},
+      A5:{id:"hall",label:"hall"},B5:{id:"hall",label:"hall"},C5:{id:"hall",label:"hall"},D5:{id:"oficina",label:"oficina"},E5:{id:"oficina",label:"oficina"},F5:{id:"oficina",label:"oficina"},
+      A6:{id:"hall",label:"hall"},B6:{id:"hall",label:"hall"},C6:{id:"hall",label:"hall"},D6:{id:"oficina",label:"oficina"},E6:{id:"oficina",label:"oficina"},F6:{id:"oficina",label:"oficina"}
+    },
+    objects:{
+      A1:"estanteria",B1:"estanteria",C1:"estanteria",D1:"caja",E1:"vehiculo",F1:"vehiculo",
+      A2:"caja",B2:"vacio",C2:"vacio",D2:"vacio",E2:"vacio",F2:"vacio",
+      A3:"caja",B3:"vacio",C3:"silla",D3:"caja",E3:"caja",F3:"caja",
+      A4:"planta",B4:"silla",C4:"vacio",D4:"vacio",E4:"vacio",F4:"silla",
+      A5:"mesa",B5:"mesa",C5:"mesa",D5:"vacio",E5:"silla",F5:"planta",
+      A6:"silla",B6:"vacio",C6:"silla",D6:"vacio",E6:"mesa",F6:"vacio"
+    },
+    characters:[
+      {id:"hugo",name:"Hugo",clue:"Era una de las cuatro personas que estaban sentadas, no estaba en una esquina.",color:PALETTE[0]},
+      {id:"laszlo",name:"Laszlo",clue:"Había una planta en su zona.",color:PALETTE[1]},
+      {id:"paula",name:"Paula",clue:"No tenía a nadie más en su zona y estaba sentada.",color:PALETTE[2]},
+      {id:"frances",name:"Frances",clue:"Era la única persona junto a una silla.",color:PALETTE[3]},
+      {id:"damian",name:"Damian",clue:"Estaba sentado, al sur de Paula y no estaba junto a una planta.",color:PALETTE[4]},
+      {id:"vincent",name:"Vincent",clue:"La víctima. Estaba a solas con el asesino.",color:PALETTE[8],victim:true}
+    ]
+  },
+
+  "14": {
+    id:"14",
+    tabTitle:"Nivel 14 (v2)",
+    tabSubtitle:"Plaza · 9×9",
+    title:"Nivel 14 (v2)",
+    meta:"9×9 · zona central + cuatro zonas exteriores",
+    size:9,
+    cellSize:82,
+    zoneColors:{
+      z1:"#dce9ea", z2:"#eadfd4", central:"#e9e2c9", z3:"#dce7d2", z4:"#e5dcea"
+    },
+    zoneOrder:["z1","z2","central","z3","z4"],
+    zones:{
+      A1:{id:"z1",label:"zona 1"},B1:{id:"z1",label:"zona 1"},C1:{id:"z1",label:"zona 1"},D1:{id:"z1",label:"zona 1"},E1:{id:"central",label:"zona central"},F1:{id:"z2",label:"zona 2"},G1:{id:"z2",label:"zona 2"},H1:{id:"z2",label:"zona 2"},I1:{id:"z2",label:"zona 2"},
+      A2:{id:"z1",label:"zona 1"},B2:{id:"z1",label:"zona 1"},C2:{id:"z1",label:"zona 1"},D2:{id:"z1",label:"zona 1"},E2:{id:"central",label:"zona central"},F2:{id:"z2",label:"zona 2"},G2:{id:"z2",label:"zona 2"},H2:{id:"z2",label:"zona 2"},I2:{id:"z2",label:"zona 2"},
+      A3:{id:"z1",label:"zona 1"},B3:{id:"z1",label:"zona 1"},C3:{id:"z1",label:"zona 1"},D3:{id:"z1",label:"zona 1"},E3:{id:"central",label:"zona central"},F3:{id:"z2",label:"zona 2"},G3:{id:"z2",label:"zona 2"},H3:{id:"z2",label:"zona 2"},I3:{id:"z2",label:"zona 2"},
+      A4:{id:"z1",label:"zona 1"},B4:{id:"z1",label:"zona 1"},C4:{id:"z1",label:"zona 1"},D4:{id:"central",label:"zona central"},E4:{id:"central",label:"zona central"},F4:{id:"central",label:"zona central"},G4:{id:"z2",label:"zona 2"},H4:{id:"z2",label:"zona 2"},I4:{id:"z2",label:"zona 2"},
+      A5:{id:"central",label:"zona central"},B5:{id:"central",label:"zona central"},C5:{id:"central",label:"zona central"},D5:{id:"central",label:"zona central"},E5:{id:"central",label:"zona central"},F5:{id:"central",label:"zona central"},G5:{id:"central",label:"zona central"},H5:{id:"central",label:"zona central"},I5:{id:"central",label:"zona central"},
+      A6:{id:"z3",label:"zona 3"},B6:{id:"z3",label:"zona 3"},C6:{id:"z3",label:"zona 3"},D6:{id:"central",label:"zona central"},E6:{id:"central",label:"zona central"},F6:{id:"central",label:"zona central"},G6:{id:"z4",label:"zona 4"},H6:{id:"z4",label:"zona 4"},I6:{id:"z4",label:"zona 4"},
+      A7:{id:"z3",label:"zona 3"},B7:{id:"z3",label:"zona 3"},C7:{id:"z3",label:"zona 3"},D7:{id:"z3",label:"zona 3"},E7:{id:"central",label:"zona central"},F7:{id:"z4",label:"zona 4"},G7:{id:"z4",label:"zona 4"},H7:{id:"z4",label:"zona 4"},I7:{id:"z4",label:"zona 4"},
+      A8:{id:"z3",label:"zona 3"},B8:{id:"z3",label:"zona 3"},C8:{id:"z3",label:"zona 3"},D8:{id:"z3",label:"zona 3"},E8:{id:"central",label:"zona central"},F8:{id:"z4",label:"zona 4"},G8:{id:"z4",label:"zona 4"},H8:{id:"z4",label:"zona 4"},I8:{id:"z4",label:"zona 4"},
+      A9:{id:"z3",label:"zona 3"},B9:{id:"z3",label:"zona 3"},C9:{id:"z3",label:"zona 3"},D9:{id:"z3",label:"zona 3"},E9:{id:"central",label:"zona central"},F9:{id:"z4",label:"zona 4"},G9:{id:"z4",label:"zona 4"},H9:{id:"z4",label:"zona 4"},I9:{id:"z4",label:"zona 4"}
+    },
+    objects:{
+      A1:"vacio",B1:"flores",C1:"flores",D1:"flores",E1:"paloma",F1:"arbusto",G1:"arbol",H1:"vacio",I1:"paloma",
+      A2:"vacio",B2:"estatua",C2:"vacio",D2:"banco",E2:"vacio",F2:"banco",G2:"vacio",H2:"estatua",I2:"vacio",
+      A3:"vacio",B3:"vacio",C3:"vacio",D3:"banco",E3:"vacio",F3:"banco",G3:"vacio",H3:"vacio",I3:"vacio",
+      A4:"arbusto",B4:"arbusto",C4:"arbusto",D4:"paloma",E4:"vacio",F4:"vacio",G4:"arbusto",H4:"arbusto",I4:"arbusto",
+      A5:"tacho",B5:"vacio",C5:"vacio",D5:"vacio",E5:"fuente",F5:"vacio",G5:"vacio",H5:"vacio",I5:"tacho",
+      A6:"arbusto",B6:"arbusto",C6:"arbusto",D6:"vacio",E6:"vacio",F6:"vacio",G6:"arbusto",H6:"arbusto",I6:"arbusto",
+      A7:"paloma",B7:"vacio",C7:"arbol",D7:"arbusto",E7:"vacio",F7:"arbusto",G7:"arbol",H7:"vacio",I7:"vacio",
+      A8:"vacio",B8:"estatua",C8:"vacio",D8:"banco",E8:"vacio",F8:"banco",G8:"vacio",H8:"estatua",I8:"vacio",
+      A9:"vacio",B9:"vacio",C9:"vacio",D9:"banco",E9:"vacio",F9:"banco",G9:"vacio",H9:"vacio",I9:"vacio"
+    },
+    characters:[
+      {id:"regina",name:"Regina",clue:"Regina estaba junto a un árbol.",color:PALETTE[0]},
+      {id:"nataly",name:"Nataly",clue:"Nataly estaba junto a una estatua.",color:PALETTE[1]},
+      {id:"esther",name:"Esther",clue:"Esther era la única persona junto a una paloma.",color:PALETTE[2]},
+      {id:"amara",name:"Amara",clue:"Amara estaba en una esquina de su habitación.",color:PALETTE[3]},
+      {id:"xavier",name:"Xavier",clue:"Xavier era la única persona en un asiento.",color:PALETTE[4]},
+      {id:"lila",name:"Lila",clue:"Lila no estaba al oeste de Amara.",color:PALETTE[5]},
+      {id:"faye",name:"Faye",clue:"Faye estaba al oeste de Xavier, estaba junto a un arbusto.",color:PALETTE[6]},
+      {id:"giselle",name:"Giselle",clue:"Giselle no tenía a nadie más en su zona, estaba junto a un arbusto.",color:PALETTE[7]},
+      {id:"charlie",name:"Charlie",clue:"La víctima. Estaba a solas con el asesino.",color:PALETTE[8],victim:true}
+    ]
+  }
 };
 
-const objects = {
-  A1:"estanteria",B1:"estanteria",C1:"estanteria",D1:"caja",E1:"vehiculo",F1:"vehiculo",
-  A2:"caja",B2:"vacio",C2:"vacio",D2:"vacio",E2:"vacio",F2:"vacio",
-  A3:"caja",B3:"vacio",C3:"silla",D3:"caja",E3:"caja",F3:"caja",
-  A4:"planta",B4:"silla",C4:"vacio",D4:"vacio",E4:"vacio",F4:"silla",
-  A5:"mesa",B5:"mesa",C5:"mesa",D5:"vacio",E5:"silla",F5:"planta",
-  A6:"silla",B6:"vacio",C6:"silla",D6:"vacio",E6:"mesa",F6:"vacio"
-};
+const runtimeStates = {};
+for(const levelId of Object.keys(LEVELS)){
+  runtimeStates[levelId] = {
+    notes:new Map(),
+    manualX:new Set(),
+    placements:new Map(),
+    undo:[],
+    redo:[],
+    selectedCharacter:LEVELS[levelId].characters[0].id
+  };
+}
 
-const zoneColors = {
-  "paq1":"#dce9ea",
-  "paq2":"#cfe2e4",
-  "descarga":"#ead9c8",
-  "hall":"#dce7d2",
-  "oficina":"#e5dcea"
-};
-
-let selectedCharacter = characters[0].id;
+let currentLevelId = LEVELS[location.hash.replace("#","")] ? location.hash.replace("#","") : "10";
 let mode = "note";
-const notes = new Map();          // cell => Set(characterId)
-const manualX = new Set();        // cells
-const placements = new Map();     // characterId => cell
 
 const board = document.getElementById("board");
 const charWrap = document.getElementById("characters");
 const status = document.getElementById("modeStatus");
+const levelTabs = document.getElementById("levelTabs");
+const colLabels = document.getElementById("colLabels");
+const rowLabels = document.getElementById("rowLabels");
+const levelTitle = document.getElementById("levelTitle");
+const levelMeta = document.getElementById("levelMeta");
+const sidebarSubtitle = document.getElementById("sidebarSubtitle");
+const legend = document.getElementById("legend");
+
+function level(){ return LEVELS[currentLevelId]; }
+function state(){ return runtimeStates[currentLevelId]; }
+function cols(){ return Array.from({length:level().size},(_,i)=>String.fromCharCode(65+i)); }
+function rows(){ return Array.from({length:level().size},(_,i)=>i+1); }
 
 function initials(name){
-  const clean = (name || "?").trim();
+  const clean=(name||"?").trim();
   return clean ? clean[0].toUpperCase() : "?";
 }
-
-function getCharacter(id){
-  return characters.find(c => c.id === id);
-}
-
+function getCharacter(id){ return level().characters.find(c=>c.id===id); }
 function cellRow(cellId){ return Number(cellId.slice(1)); }
 function cellCol(cellId){ return cellId[0]; }
 
+function cloneSnapshot(){
+  const s=state();
+  return {
+    notes:Object.fromEntries([...s.notes].map(([k,v])=>[k,[...v]])),
+    manualX:[...s.manualX],
+    placements:Object.fromEntries(s.placements)
+  };
+}
+function snapshotString(snap){ return JSON.stringify(snap); }
+function restoreSnapshot(snap){
+  const s=state();
+  s.notes=new Map(Object.entries(snap.notes).map(([k,v])=>[k,new Set(v)]));
+  s.manualX=new Set(snap.manualX);
+  s.placements=new Map(Object.entries(snap.placements));
+}
+function applyAction(mutator){
+  const s=state();
+  const before=cloneSnapshot();
+  mutator();
+  const after=cloneSnapshot();
+  if(snapshotString(before)!==snapshotString(after)){
+    s.undo.push(before);
+    if(s.undo.length>150) s.undo.shift();
+    s.redo=[];
+  }
+  renderBoard();
+  updateHistoryButtons();
+}
+function undo(){
+  const s=state();
+  if(!s.undo.length) return;
+  const current=cloneSnapshot();
+  const previous=s.undo.pop();
+  s.redo.push(current);
+  restoreSnapshot(previous);
+  renderBoard();
+  updateHistoryButtons();
+}
+function redo(){
+  const s=state();
+  if(!s.redo.length) return;
+  const current=cloneSnapshot();
+  const next=s.redo.pop();
+  s.undo.push(current);
+  restoreSnapshot(next);
+  renderBoard();
+  updateHistoryButtons();
+}
+function updateHistoryButtons(){
+  document.getElementById("undoBtn").disabled=!state().undo.length;
+  document.getElementById("redoBtn").disabled=!state().redo.length;
+}
+
+function escapeHtml(str){
+  return String(str).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+}
+
 function isAutoBlocked(cellId){
-  for (const [, placedCell] of placements){
-    if (placedCell === cellId) continue;
-    if (cellRow(placedCell) === cellRow(cellId) || cellCol(placedCell) === cellCol(cellId)){
-      return true;
-    }
+  for(const [,placedCell] of state().placements){
+    if(placedCell===cellId) continue;
+    if(cellRow(placedCell)===cellRow(cellId) || cellCol(placedCell)===cellCol(cellId)) return true;
   }
   return false;
 }
 
-function buildCharacters(){
-  charWrap.innerHTML = "";
-  characters.forEach(ch => {
-    const card = document.createElement("div");
-    card.className = "character" + (ch.id === selectedCharacter ? " selected" : "") + (ch.victim ? " victim" : "");
-    card.style.setProperty("--char-color", ch.color);
-    card.dataset.id = ch.id;
+function buildLevelTabs(){
+  levelTabs.innerHTML="";
+  Object.values(LEVELS).forEach(l=>{
+    const btn=document.createElement("button");
+    btn.className="level-tab"+(l.id===currentLevelId?" active":"");
+    btn.innerHTML=`<strong>${escapeHtml(l.tabTitle)}</strong><small>${escapeHtml(l.tabSubtitle)}</small>`;
+    btn.addEventListener("click",()=>switchLevel(l.id));
+    levelTabs.appendChild(btn);
+  });
+}
 
-    card.innerHTML = `
+function switchLevel(id){
+  if(!LEVELS[id]) return;
+  currentLevelId=id;
+  location.hash=id;
+  mode="note";
+  renderAll();
+}
+
+function buildCharacters(){
+  charWrap.innerHTML="";
+  const selected=state().selectedCharacter;
+  level().characters.forEach(ch=>{
+    const card=document.createElement("div");
+    card.className="character"+(ch.id===selected?" selected":"")+(ch.victim?" victim":"");
+    card.style.setProperty("--char-color",ch.color);
+    card.dataset.id=ch.id;
+    card.innerHTML=`
       <div class="character-top">
         <div class="badge">${initials(ch.name)}</div>
         <input class="name-input" value="${escapeHtml(ch.name)}" aria-label="Nombre">
+        ${ch.victim?'<span class="victim-tag">VÍCTIMA</span>':''}
       </div>
-      <textarea class="clue-input" aria-label="Pista">${escapeHtml(ch.clue)}</textarea>
-    `;
+      <textarea class="clue-input" aria-label="Pista">${escapeHtml(ch.clue)}</textarea>`;
 
-    card.addEventListener("click", (e)=>{
+    card.addEventListener("click",e=>{
       if(e.target.matches("input,textarea")) return;
-      selectedCharacter = ch.id;
-      mode = "note";
+      state().selectedCharacter=ch.id;
+      mode="note";
       syncToolButtons();
       buildCharacters();
     });
 
-    const nameInput = card.querySelector(".name-input");
-    const clueInput = card.querySelector(".clue-input");
-
-    nameInput.addEventListener("click", e => e.stopPropagation());
-    clueInput.addEventListener("click", e => e.stopPropagation());
-
-    nameInput.addEventListener("input", e => {
-      ch.name = e.target.value;
-      card.querySelector(".badge").textContent = initials(ch.name);
+    const nameInput=card.querySelector(".name-input");
+    const clueInput=card.querySelector(".clue-input");
+    nameInput.addEventListener("click",e=>e.stopPropagation());
+    clueInput.addEventListener("click",e=>e.stopPropagation());
+    nameInput.addEventListener("input",e=>{
+      ch.name=e.target.value;
+      card.querySelector(".badge").textContent=initials(ch.name);
       renderBoard();
     });
-    clueInput.addEventListener("input", e => ch.clue = e.target.value);
-
+    clueInput.addEventListener("input",e=>ch.clue=e.target.value);
     charWrap.appendChild(card);
   });
 }
 
-function escapeHtml(str){
-  return String(str)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;");
-}
-
-function objClass(obj){
+function objectClass(obj){
   return {
-    silla:"obj-silla",
-    estanteria:"obj-estanteria",
-    caja:"obj-caja",
-    vehiculo:"obj-vehiculo",
-    planta:"obj-planta",
-    mesa:"obj-mesa"
-  }[obj] || "";
+    silla:"obj-silla", banco:"obj-banco", estanteria:"obj-estanteria", caja:"obj-caja",
+    vehiculo:"obj-vehiculo", planta:"obj-planta", mesa:"obj-mesa", estatua:"obj-estatua",
+    paloma:"obj-paloma", arbusto:"obj-arbusto", arbol:"obj-arbol", flores:"obj-flores",
+    fuente:"obj-fuente", tacho:"obj-tacho"
+  }[obj]||"";
+}
+function objectLabel(obj){
+  return {arbol:"árbol",flores:"flores",vehiculo:"vehículo",tacho:"tacho"}[obj]||obj;
 }
 
 function boundaryClasses(colIndex,rowIndex,cellId){
-  const z = zones[cellId]?.id;
-  const out = [];
-  const top = rowIndex === 0 ? null : `${COLS[colIndex]}${ROWS[rowIndex-1]}`;
-  const bottom = rowIndex === ROWS.length-1 ? null : `${COLS[colIndex]}${ROWS[rowIndex+1]}`;
-  const left = colIndex === 0 ? null : `${COLS[colIndex-1]}${ROWS[rowIndex]}`;
-  const right = colIndex === COLS.length-1 ? null : `${COLS[colIndex+1]}${ROWS[rowIndex]}`;
-
-  if(top && zones[top]?.id !== z) out.push("boundary-top");
-  if(bottom && zones[bottom]?.id !== z) out.push("boundary-bottom");
-  if(left && zones[left]?.id !== z) out.push("boundary-left");
-  if(right && zones[right]?.id !== z) out.push("boundary-right");
+  const z=level().zones[cellId]?.id;
+  const C=cols(),R=rows();
+  const out=[];
+  const top=rowIndex===0?null:`${C[colIndex]}${R[rowIndex-1]}`;
+  const bottom=rowIndex===R.length-1?null:`${C[colIndex]}${R[rowIndex+1]}`;
+  const left=colIndex===0?null:`${C[colIndex-1]}${R[rowIndex]}`;
+  const right=colIndex===C.length-1?null:`${C[colIndex+1]}${R[rowIndex]}`;
+  if(top && level().zones[top]?.id!==z) out.push("boundary-top");
+  if(bottom && level().zones[bottom]?.id!==z) out.push("boundary-bottom");
+  if(left && level().zones[left]?.id!==z) out.push("boundary-left");
+  if(right && level().zones[right]?.id!==z) out.push("boundary-right");
   return out.join(" ");
 }
 
 function renderBoard(){
-  board.innerHTML = "";
-  ROWS.forEach((r,rowIndex)=>{
-    COLS.forEach((c,colIndex)=>{
-      const id = `${c}${r}`;
-      const cell = document.createElement("div");
-      cell.className = `cell ${boundaryClasses(colIndex,rowIndex,id)}`;
-      cell.dataset.cell = id;
-      cell.style.setProperty("--zone-bg", zoneColors[zones[id]?.id] || "#eee");
+  const l=level(),s=state(),C=cols(),R=rows();
+  document.documentElement.style.setProperty("--cell",`${l.cellSize}px`);
+  colLabels.style.gridTemplateColumns=`repeat(${l.size},var(--cell))`;
+  rowLabels.style.gridTemplateRows=`repeat(${l.size},var(--cell))`;
+  board.style.gridTemplateColumns=`repeat(${l.size},var(--cell))`;
+  board.style.gridTemplateRows=`repeat(${l.size},var(--cell))`;
+  colLabels.innerHTML=C.map(c=>`<div>${c}</div>`).join("");
+  rowLabels.innerHTML=R.map(r=>`<div>${r}</div>`).join("");
+  board.innerHTML="";
 
-      const object = objects[id];
-      let objectHtml = "";
-      if(object !== "vacio"){
-        objectHtml = `
-          <div class="object">
-            <div class="${objClass(object)}"></div>
-            <div class="object-label">${object}</div>
-          </div>`;
+  R.forEach((r,rowIndex)=>{
+    C.forEach((c,colIndex)=>{
+      const id=`${c}${r}`;
+      const cell=document.createElement("div");
+      cell.className=`cell ${boundaryClasses(colIndex,rowIndex,id)}`;
+      cell.dataset.cell=id;
+      const z=l.zones[id];
+      cell.style.setProperty("--zone-bg",l.zoneColors[z?.id]||"#eee");
+
+      const obj=l.objects[id]||"vacio";
+      let objectHtml="";
+      if(obj!=="vacio"){
+        objectHtml=`<div class="object"><div class="object-shape ${objectClass(obj)}"></div><div class="object-label">${escapeHtml(objectLabel(obj))}</div></div>`;
       }
 
-      let notesHtml = "";
-      const set = notes.get(id);
-      if(set && set.size){
-        notesHtml = `<div class="notes">` + [...set].map(pid=>{
-          const ch = getCharacter(pid);
-          return `<span class="note" style="--note-color:${ch.color}">${initials(ch.name)}</span>`;
-        }).join("") + `</div>`;
+      let notesHtml="";
+      const set=s.notes.get(id);
+      if(set&&set.size){
+        notesHtml=`<div class="notes">${[...set].map(pid=>{
+          const ch=getCharacter(pid);
+          return ch?`<span class="note" style="--note-color:${ch.color}">${initials(ch.name)}</span>`:"";
+        }).join("")}</div>`;
       }
 
-      const placed = [...placements.entries()].find(([,cellId])=>cellId === id);
-      let placementHtml = "";
+      const placed=[...s.placements.entries()].find(([,cellId])=>cellId===id);
+      let placementHtml="";
       if(placed){
-        const ch = getCharacter(placed[0]);
-        placementHtml = `
-          <div class="placement" style="--placement-color:${ch.color}">
-            <div class="placement-letter">${initials(ch.name)}</div>
-            <div class="placement-name">${escapeHtml(ch.name)}</div>
-          </div>`;
+        const ch=getCharacter(placed[0]);
+        if(ch) placementHtml=`<div class="placement" style="--placement-color:${ch.color}"><div class="placement-letter">${initials(ch.name)}</div><div class="placement-name">${escapeHtml(ch.name)}</div></div>`;
       }
 
-      const manualXHtml = manualX.has(id) ? `<div class="manual-x">×</div>` : "";
-      const autoXHtml = isAutoBlocked(id) && !placed ? `<div class="auto-x">×</div>` : "";
+      const manualXHtml=s.manualX.has(id)?`<div class="manual-x">×</div>`:"";
+      const autoXHtml=isAutoBlocked(id)&&!placed?`<div class="auto-x">×</div>`:"";
 
-      cell.innerHTML = `
+      cell.innerHTML=`
         <div class="coord">${id}</div>
-        ${objectHtml}
-        ${autoXHtml}
-        ${manualXHtml}
-        ${notesHtml}
-        ${placementHtml}
-        <div class="zone-name">${zones[id]?.label || ""}</div>
-      `;
-
+        ${objectHtml}${autoXHtml}${manualXHtml}${notesHtml}${placementHtml}
+        <div class="zone-name">${escapeHtml(z?.label||"")}</div>`;
       attachCellEvents(cell);
       board.appendChild(cell);
     });
   });
 }
 
+function renderLegend(){
+  const l=level();
+  legend.innerHTML=l.zoneOrder.map(id=>{
+    const first=Object.values(l.zones).find(z=>z.id===id);
+    const label=first?.label||id;
+    return `<span><i class="legend-dot" style="background:${l.zoneColors[id]}"></i>${escapeHtml(label)}</span>`;
+  }).join("")+`<span>X gris = bloqueo automático</span><span>X roja = descarte manual</span>`;
+}
+
+function renderHeader(){
+  const l=level();
+  levelTitle.textContent=l.title;
+  levelMeta.textContent=l.meta;
+  sidebarSubtitle.innerHTML=`${escapeHtml(l.tabTitle)} · ${l.size}×${l.size}<br>Las anotaciones quedan guardadas mientras cambiás entre niveles.`;
+}
+
 function toggleNote(cellId){
-  if(!selectedCharacter) return;
-  if(!notes.has(cellId)) notes.set(cellId,new Set());
-  const s = notes.get(cellId);
-  if(s.has(selectedCharacter)) s.delete(selectedCharacter);
-  else s.add(selectedCharacter);
-  if(s.size === 0) notes.delete(cellId);
+  const s=state(),selected=s.selectedCharacter;
+  if(!selected) return;
+  if(!s.notes.has(cellId)) s.notes.set(cellId,new Set());
+  const set=s.notes.get(cellId);
+  if(set.has(selected)) set.delete(selected); else set.add(selected);
+  if(set.size===0) s.notes.delete(cellId);
 }
-
-function eraseCell(cellId){
-  notes.delete(cellId);
-  manualX.delete(cellId);
-}
-
-function toggleManualX(cellId){
-  if(manualX.has(cellId)) manualX.delete(cellId);
-  else manualX.add(cellId);
-}
-
+function eraseCell(cellId){ state().notes.delete(cellId);state().manualX.delete(cellId); }
+function toggleManualX(cellId){ const x=state().manualX;x.has(cellId)?x.delete(cellId):x.add(cellId); }
 function placeSelected(cellId){
-  if(!selectedCharacter) return;
-
-  // Si otra persona ya estaba en esta celda, la saca.
-  for(const [pid,cid] of placements.entries()){
-    if(cid === cellId && pid !== selectedCharacter){
-      placements.delete(pid);
-    }
-  }
-
-  // Toggle si ya estaba puesta ahí; si estaba en otra, la mueve.
-  if(placements.get(selectedCharacter) === cellId){
-    placements.delete(selectedCharacter);
-  } else {
-    placements.set(selectedCharacter, cellId);
-    notes.delete(cellId);
-    manualX.delete(cellId);
+  const s=state(),selected=s.selectedCharacter;
+  if(!selected) return;
+  for(const [pid,cid] of s.placements.entries()) if(cid===cellId&&pid!==selected) s.placements.delete(pid);
+  if(s.placements.get(selected)===cellId) s.placements.delete(selected);
+  else{
+    s.placements.set(selected,cellId);
+    s.notes.delete(cellId);
+    s.manualX.delete(cellId);
   }
 }
-
 function removePlacementAt(cellId){
-  for(const [pid,cid] of placements.entries()){
-    if(cid === cellId){
-      placements.delete(pid);
-      return;
-    }
-  }
+  for(const [pid,cid] of state().placements.entries()) if(cid===cellId){state().placements.delete(pid);return;}
 }
 
 function attachCellEvents(cell){
-  let timer = null;
-  let longPressed = false;
-  const cellId = cell.dataset.cell;
-
-  const start = (e)=>{
-    if(e.type === "mousedown" && e.button !== 0) return;
-    longPressed = false;
-    timer = setTimeout(()=>{
-      longPressed = true;
-      if(mode === "eraser") removePlacementAt(cellId);
-      else if(mode === "note") placeSelected(cellId);
-      renderBoard();
-    }, 550);
+  let timer=null,longPressed=false;
+  const cellId=cell.dataset.cell;
+  const start=e=>{
+    if(e.type==="mousedown"&&e.button!==0) return;
+    longPressed=false;
+    timer=setTimeout(()=>{
+      longPressed=true;
+      if(mode==="eraser") applyAction(()=>removePlacementAt(cellId));
+      else if(mode==="note") applyAction(()=>placeSelected(cellId));
+    },550);
   };
-
-  const cancel = ()=>{
-    if(timer){ clearTimeout(timer); timer = null; }
-  };
-
-  const end = (e)=>{
+  const cancel=()=>{if(timer){clearTimeout(timer);timer=null;}};
+  const end=e=>{
     cancel();
-    if(longPressed){
-      e.preventDefault();
-      return;
-    }
-
-    if(mode === "note") toggleNote(cellId);
-    if(mode === "x") toggleManualX(cellId);
-    if(mode === "eraser") eraseCell(cellId);
-    renderBoard();
+    if(longPressed){e.preventDefault();return;}
+    if(mode==="note") applyAction(()=>toggleNote(cellId));
+    if(mode==="x") applyAction(()=>toggleManualX(cellId));
+    if(mode==="eraser") applyAction(()=>eraseCell(cellId));
   };
-
-  cell.addEventListener("mousedown", start);
-  cell.addEventListener("mouseup", end);
-  cell.addEventListener("mouseleave", cancel);
-
-  cell.addEventListener("touchstart", start, {passive:true});
-  cell.addEventListener("touchend", end);
-  cell.addEventListener("touchcancel", cancel);
-
-  cell.addEventListener("contextmenu", e=>e.preventDefault());
+  cell.addEventListener("mousedown",start);
+  cell.addEventListener("mouseup",end);
+  cell.addEventListener("mouseleave",cancel);
+  cell.addEventListener("touchstart",start,{passive:true});
+  cell.addEventListener("touchend",end);
+  cell.addEventListener("touchcancel",cancel);
+  cell.addEventListener("contextmenu",e=>e.preventDefault());
 }
 
 function syncToolButtons(){
   document.getElementById("noteTool").classList.toggle("active",mode==="note");
   document.getElementById("xTool").classList.toggle("active",mode==="x");
   document.getElementById("eraserTool").classList.toggle("active",mode==="eraser");
-
-  const labels = {note:"nota / colocar", x:"X manual", eraser:"goma"};
-  status.textContent = "Modo: " + labels[mode];
+  const labels={note:"nota / colocar",x:"X manual",eraser:"goma"};
+  status.textContent="Modo: "+labels[mode];
 }
 
-document.getElementById("noteTool").addEventListener("click",()=>{
-  mode="note"; syncToolButtons();
-});
-document.getElementById("xTool").addEventListener("click",()=>{
-  mode="x"; syncToolButtons();
-});
-document.getElementById("eraserTool").addEventListener("click",()=>{
-  mode="eraser"; syncToolButtons();
-});
+function renderAll(){
+  buildLevelTabs();
+  buildCharacters();
+  renderHeader();
+  renderBoard();
+  renderLegend();
+  syncToolButtons();
+  updateHistoryButtons();
+}
+
+document.getElementById("noteTool").addEventListener("click",()=>{mode="note";syncToolButtons();});
+document.getElementById("xTool").addEventListener("click",()=>{mode="x";syncToolButtons();});
+document.getElementById("eraserTool").addEventListener("click",()=>{mode="eraser";syncToolButtons();});
+document.getElementById("undoBtn").addEventListener("click",undo);
+document.getElementById("redoBtn").addEventListener("click",redo);
 document.getElementById("resetBtn").addEventListener("click",()=>{
-  if(confirm("¿Limpiar notas, X y personajes colocados?")){
-    notes.clear();
-    manualX.clear();
-    placements.clear();
-    renderBoard();
+  if(confirm(`¿Limpiar notas, X y personajes colocados del ${level().tabTitle}?`)){
+    applyAction(()=>{
+      state().notes.clear();
+      state().manualX.clear();
+      state().placements.clear();
+    });
   }
 });
 
-buildCharacters();
-renderBoard();
-syncToolButtons();
+window.addEventListener("hashchange",()=>{
+  const id=location.hash.replace("#","");
+  if(LEVELS[id]&&id!==currentLevelId){currentLevelId=id;mode="note";renderAll();}
+});
+
+document.addEventListener("keydown",e=>{
+  const mod=e.ctrlKey||e.metaKey;
+  if(!mod) return;
+  const key=e.key.toLowerCase();
+  if(key==="z"&&!e.shiftKey){e.preventDefault();undo();}
+  else if(key==="y"||(key==="z"&&e.shiftKey)){e.preventDefault();redo();}
+});
+
+renderAll();
 </script>
 </body>
 </html>
